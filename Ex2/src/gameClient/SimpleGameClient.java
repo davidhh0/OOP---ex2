@@ -68,7 +68,7 @@ public class SimpleGameClient {
 		int r = (int)(Math.random()*s);
 		int i=0;
 		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
+		ans = itr.next().get_dest();
 		return ans;
 	}
 

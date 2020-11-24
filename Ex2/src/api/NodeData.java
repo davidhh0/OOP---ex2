@@ -1,22 +1,26 @@
 package api;
 
 public class NodeData implements node_data {
-    private int Tag;
-    private int key;
-    private geo_location location;
+    private int _tag;
+    private int _key;
+    private geo_location _location;
+
+    public NodeData(int key){
+        _key=key;
+        _tag=0;
+    }
     @Override
-    public int getKey() {
-        return key;
+    public int get_key() {
+        return _key;
+    }
+    @Override
+    public geo_location get_location() {
+        return _location;
     }
 
     @Override
-    public geo_location getLocation() {
-        return location;
-    }
-
-    @Override
-    public void setLocation(geo_location p) {
-        location = p;
+    public void set_location(geo_location p) {
+        _location = p;
 
     }
 
@@ -41,12 +45,12 @@ public class NodeData implements node_data {
     }
 
     @Override
-    public int getTag() {
-        return Tag;
+    public int get_tag() {
+        return _tag;
     }
 
     @Override
-    public void setTag(int t) {
-    Tag=t;
+    public void set_tag(int t) {
+    _tag =t;
     }
 }

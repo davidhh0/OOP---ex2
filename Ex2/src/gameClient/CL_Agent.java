@@ -27,7 +27,7 @@ public class CL_Agent {
 			_gg = g;
 			setMoney(0);
 			this._curr_node = _gg.getNode(start_node);
-			_pos = _curr_node.getLocation();
+			_pos = _curr_node.get_location();
 			_id = -1;
 			setSpeed(0);
 		}
@@ -58,13 +58,13 @@ public class CL_Agent {
 			}
 		}
 		//@Override
-		public int getSrcNode() {return this._curr_node.getKey();}
+		public int getSrcNode() {return this._curr_node.get_key();}
 		public String toJSON() {
 			int d = this.getNextNode();
 			String ans = "{\"Agent\":{"
 					+ "\"id\":"+this._id+","
 					+ "\"value\":"+this._value+","
-					+ "\"src\":"+this._curr_node.getKey()+","
+					+ "\"src\":"+this._curr_node.get_key()+","
 					+ "\"dest\":"+d+","
 					+ "\"speed\":"+this.getSpeed()+","
 					+ "\"pos\":\""+_pos.toString()+"\""
@@ -76,7 +76,7 @@ public class CL_Agent {
 	
 		public boolean setNextNode(int dest) {
 			boolean ans = false;
-			int src = this._curr_node.getKey();
+			int src = this._curr_node.get_key();
 			this._curr_edge = _gg.getEdge(src, dest);
 			if(_curr_edge!=null) {
 				ans=true;
@@ -120,7 +120,7 @@ public class CL_Agent {
 			if(this._curr_edge==null) {
 				ans = -1;}
 			else {
-				ans = this._curr_edge.getDest();
+				ans = this._curr_edge.get_dest();
 			}
 			return ans;
 		}
@@ -141,9 +141,9 @@ public class CL_Agent {
 		public void set_SDT(long ddtt) {
 			long ddt = ddtt;
 			if(this._curr_edge!=null) {
-				double w = get_curr_edge().getWeight();
-				geo_location dest = _gg.getNode(get_curr_edge().getDest()).getLocation();
-				geo_location src = _gg.getNode(get_curr_edge().getSrc()).getLocation();
+				double w = get_curr_edge().get_weight();
+				geo_location dest = _gg.getNode(get_curr_edge().get_dest()).get_location();
+				geo_location src = _gg.getNode(get_curr_edge().get_src()).get_location();
 				double de = src.distance(dest);
 				double dist = _pos.distance(dest);
 				if(this.get_curr_fruit().get_edge()==this.get_curr_edge()) {

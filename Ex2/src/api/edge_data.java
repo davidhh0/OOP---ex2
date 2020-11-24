@@ -10,16 +10,16 @@ public interface edge_data {
 	 * The id of the source node of this edge.
 	 * @return
 	 */
-	public int getSrc();
+	public int get_src();
 	/**
 	 * The id of the destination node of this edge
 	 * @return
 	 */
-	public int getDest();
+	public int get_dest();
 	/**
 	 * @return the weight of this edge (positive value).
 	 */
-	public double getWeight();
+	public double get_weight();
 	/**
 	 * Returns the remark (meta data) associated with this edge.
 	 * @return
@@ -35,11 +35,11 @@ public interface edge_data {
 	 * which can be used be algorithms 
 	 * @return
 	 */
-	public int getTag();
+	public int get_tag();
 	/** 
 	 * This method allows setting the "tag" value for temporal marking an edge - common
 	 * practice for marking by algorithms.
 	 * @param t - the new value of the tag
 	 */
-	public void setTag(int t);
+	public void set_tag(int t);
 }

@@ -56,8 +56,8 @@ public class ClientThereadedGame implements Runnable{
 			for(int a = 0;a<rs;a++) {
 				int ind = (a)%cl_fs.size();
 				CL_Pokemon c = cl_fs.get(ind);
-				int nn = c.get_edge().getDest();
-				if(c.getType()>0 ) {nn = c.get_edge().getSrc();}
+				int nn = c.get_edge().get_dest();
+				if(c.getType()>0 ) {nn = c.get_edge().get_src();}
 				game.addAgent(nn);
 			}
 			String r_s = game.getAgents();
@@ -177,7 +177,7 @@ public class ClientThereadedGame implements Runnable{
 		int r = (int)(Math.random()*s);
 		int i=0;
 		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
+		ans = itr.next().get_dest();
 		return ans;
 	}
 	private static int nextNode(directed_weighted_graph g, CL_Agent r, ArrayList<CL_Pokemon> fs, double speed) {

@@ -11,17 +11,17 @@ public interface node_data {
 	 * Returns the key (id) associated with this node.
 	 * @return
 	 */
-	public int getKey();
+	public int get_key();
 	/** Returns the location of this node, if
 	 * none return null.
 	 * 
 	 * @return
 	 */
-	public geo_location getLocation();
+	public geo_location get_location();
 	/** Allows changing this node's location.
 	 * @param p - new new location  (position) of this node.
 	 */
-	public void setLocation(geo_location p);
+	public void set_location(geo_location p);
 	/**
 	 * Returns the weight associated with this node.
 	 * @return
@@ -47,11 +47,11 @@ public interface node_data {
 	 * which can be used be algorithms 
 	 * @return
 	 */
-	public int getTag();
+	public int get_tag();
 	/** 
 	 * Allows setting the "tag" value for temporal marking an node - common
 	 * practice for marking by algorithms.
 	 * @param t - the new value of the tag
 	 */
-	public void setTag(int t);
+	public void set_tag(int t);
 }

@@ -97,7 +97,7 @@ public class Ex2_Client implements Runnable{
 		int r = (int)(Math.random()*s);
 		int i=0;
 		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
+		ans = itr.next().get_dest();
 		return ans;
 	}
 	private void init(game_service game) {
@@ -128,8 +128,8 @@ public class Ex2_Client implements Runnable{
 			for(int a = 0;a<rs;a++) {
 				int ind = a%cl_fs.size();
 				CL_Pokemon c = cl_fs.get(ind);
-				int nn = c.get_edge().getDest();
-				if(c.getType()<0 ) {nn = c.get_edge().getSrc();}
+				int nn = c.get_edge().get_dest();
+				if(c.getType()<0 ) {nn = c.get_edge().get_src();}
 				
 				game.addAgent(nn);
 			}

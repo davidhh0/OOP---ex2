@@ -42,7 +42,7 @@ public class Arena {
 		double x0=0,x1=0,y0=0,y1=0;
 		Iterator<node_data> iter = _gg.getV().iterator();
 		while(iter.hasNext()) {
-			geo_location c = iter.next().getLocation();
+			geo_location c = iter.next().get_location();
 			if(MIN==null) {x0 = c.x(); y0=c.y(); x1=x0;y1=y0;MIN = new Point3D(x0,y0);}
 			if(c.x() < x0) {x0=c.x();}
 			if(c.y() < y0) {y0=c.y();}
