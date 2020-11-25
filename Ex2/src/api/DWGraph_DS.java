@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class DWGraph_DS implements directed_weighted_graph {
+
     private HashMap<Integer, HashMap<Integer, edge_data>> edges;
     private HashMap<Integer, node_data> vertices;
     private HashMap<Integer,ArrayList<Integer>> inComing;
@@ -18,6 +19,13 @@ public class DWGraph_DS implements directed_weighted_graph {
         inComing = new HashMap<>();
     }
 
+    /**
+     * Return the Hashmap of edges....
+     * @return
+     */
+    public HashMap<Integer, HashMap<Integer, edge_data>> getEdges() {
+        return edges;
+    }
 
     /**
      * This function returns the node_data represented by the unique given key.

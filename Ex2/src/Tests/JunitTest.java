@@ -1,5 +1,6 @@
 package Tests;
 
+import api.DWGraph_Algo;
 import api.DWGraph_DS;
 import api.NodeData;
 import api.node_data;
@@ -30,13 +31,23 @@ public class JunitTest {
 
     public DWGraph_DS Graph_1A(){
         DWGraph_DS g = new DWGraph_DS();
-        NodeData n1 = new NodeData(1);NodeData n2 = new NodeData(2);NodeData n3 = new NodeData(3);
-        NodeData n0 = new NodeData(0);NodeData n4 = new NodeData(4);
+        NodeData n1 = new NodeData(1);
+        NodeData n2 = new NodeData(2);
+        NodeData n3 = new NodeData(3);
+        NodeData n0 = new NodeData(0);
+        NodeData n4 = new NodeData(4);
 
-        g.addNode(n0);g.addNode(n1);g.addNode(n2);g.addNode(n3);g.addNode(n4);
+        g.addNode(n0);
+        g.addNode(n1);
+        g.addNode(n2);
+        g.addNode(n3);
+        g.addNode(n4);
 
-        g.connect(0,1,3);g.connect(0,3,8);g.connect(0,4,8);
-        g.connect(1,2,1);g.connect(1,3,4);
+        g.connect(0,1,3);
+        g.connect(0,3,8);
+        g.connect(0,4,8);
+        g.connect(1,2,1);
+        g.connect(1,3,4);
         g.connect(3,2,2);
         g.connect(4,3,3);
 
@@ -55,7 +66,13 @@ public class JunitTest {
 
     }
 
-
+    @Test
+    public void SaveTest(){
+        DWGraph_DS graph = Graph_1A();
+        DWGraph_Algo algo = new DWGraph_Algo();
+        algo.init(graph);
+        algo.save("TestSave.json");
+    }
 
 
 
