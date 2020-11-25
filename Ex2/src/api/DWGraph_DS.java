@@ -8,8 +8,16 @@ import java.util.HashMap;
 public class DWGraph_DS implements directed_weighted_graph {
     private HashMap<Integer, HashMap<Integer, edge_data>> edges;
     private HashMap<Integer, node_data> vertices;
+    private HashMap<Integer,ArrayList<Integer>> inComing;
     private int NumberOfEdges = 0;
     private int ModeCount = 0;
+
+    public DWGraph_DS(){
+        edges = new HashMap<>();
+        vertices = new HashMap<>();
+        inComing = new HashMap<>();
+    }
+
 
     /**
      * This function returns the node_data represented by the unique given key.
@@ -48,8 +56,10 @@ public class DWGraph_DS implements directed_weighted_graph {
             //the node is NOT in vertices:
             vertices.put(n.get_key(), n);
             HashMap<Integer, edge_data> EdgesHashMap = new HashMap<>();
+            ArrayList<Integer> newInComing = new ArrayList<>();
             if (edges != null)
                 edges.put(n.get_key(), EdgesHashMap);
+            inComing.put(n.get_key(),newInComing);
             ModeCount++;
         }
     }
@@ -72,6 +82,7 @@ public class DWGraph_DS implements directed_weighted_graph {
                 NumberOfEdges++;
             EdgeData newEdge = new EdgeData(src, dest, w);
             edges.get(src).put(dest, newEdge);
+            inComing.get(dest).add(src);
             ModeCount++;
         } catch (Exception e) {
             System.err.println("Exception in connecting to nodes");
@@ -137,8 +148,12 @@ public class DWGraph_DS implements directed_weighted_graph {
             for (int i = 0; i < keysToRemove.size(); i++) {
                 removeEdge(key, keysToRemove.get(i));
             }
+            for(Integer run : inComing.get(key)){
+                removeEdge(run,key);
+            }
             vertices.remove(key);
-            edges.remove(nodeToRemove);
+            edges.remove(key);
+            inComing.remove(key);
             ModeCount++;
             return nodeToRemove;
         }
