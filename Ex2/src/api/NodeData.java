@@ -1,5 +1,7 @@
 package api;
 
+import org.jetbrains.annotations.NotNull;
+
 public class NodeData implements node_data {
     private int _tag;
     private int _key;
@@ -53,4 +55,13 @@ public class NodeData implements node_data {
     public void set_tag(int t) {
     _tag =t;
     }
+
+//    @Override
+//    public int compareTo(node_data o) {
+//        if (o.get_tag() > this.get_tag()) {
+//            return -1;
+//        } else {
+//            return 1;
+//        }
+//    }
 }

@@ -18,6 +18,27 @@ public class DWGraph_DS implements directed_weighted_graph {
         vertices = new HashMap<>();
         inComing = new HashMap<>();
     }
+    @Override
+    public boolean equals(Object g1) {
+        if (g1 == this)
+            return true;
+        if (!(g1 instanceof directed_weighted_graph))
+            return false;
+        directed_weighted_graph g0 = (directed_weighted_graph) g1;
+        if (this.nodeSize() != g0.nodeSize()) return false;
+        if (this.edgeSize() != g0.edgeSize()) return false;
+        for(node_data run : g0.getV()){ // checking all the nodes
+            if(!this.vertices.containsKey(run.get_key())) return false;
+        }
+
+        for(node_data run:g0.getV()) {
+            for (edge_data run1 : g0.getE(run.get_key())) { // returns a collection of edges coming out from run
+                int src = run1.get_src(); int dest = run1.get_dest(); double wei = run1.get_weight();
+                if(this.getEdge(src,dest).get_weight() != wei) return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Return the Hashmap of edges....
@@ -25,6 +46,10 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     public HashMap<Integer, HashMap<Integer, edge_data>> getEdges() {
         return edges;
+    }
+
+    public ArrayList<Integer> getInComing(int key){
+        return inComing.get(key);
     }
 
     /**
