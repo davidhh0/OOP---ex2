@@ -4,6 +4,7 @@ import api.DWGraph_Algo;
 import api.DWGraph_DS;
 import api.NodeData;
 import api.node_data;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
@@ -71,7 +72,19 @@ public class JunitTest {
         DWGraph_DS graph = Graph_1A();
         DWGraph_Algo algo = new DWGraph_Algo();
         algo.init(graph);
-        algo.save("TestSave.json");
+        algo.save("TestSave1.json");
+    }
+
+
+    @Test
+    public void LoadTest(){
+        DWGraph_DS graph = Graph_1A();
+        DWGraph_Algo algo = new DWGraph_Algo();
+        algo.load("/Users/yuvalmarmer/Files/Study/OOP/Ex2/OOP---ex2/Ex2/data/A5");
+        //Assertions.assertEquals(graph.edgeSize(), algo.getGraph().edgeSize());
+        //Assertions.assertEquals(graph.getV().size(), algo.getGraph().getV().size());
+        algo.isConnected();
+        System.out.println(";algo.shortestPathDist(0,5)");
     }
 
 

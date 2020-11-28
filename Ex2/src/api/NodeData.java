@@ -9,6 +9,7 @@ public class NodeData implements node_data {
         _key=key;
         _tag=0;
     }
+
     @Override
     public int get_key() {
         return _key;
