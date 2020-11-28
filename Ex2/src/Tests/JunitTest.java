@@ -4,10 +4,7 @@ import api.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class JunitTest {
     DWGraph_DS graph = new DWGraph_DS();
@@ -139,11 +136,9 @@ public class JunitTest {
     public void LoadTest(){
         DWGraph_DS graph = Graph_1B();
         DWGraph_Algo algo = new DWGraph_Algo();
-        algo.load("/Users/yuvalmarmer/Files/Study/OOP/Ex2/OOP---ex2/Ex2/data/A5");
-        //Assertions.assertEquals(graph.edgeSize(), algo.getGraph().edgeSize());
-        //Assertions.assertEquals(graph.getV().size(), algo.getGraph().getV().size());
-        algo.isConnected();
-        System.out.println(";algo.shortestPathDist(0,5)");
+        algo.load("TestSave1.json");
+        Assertions.assertEquals(graph.edgeSize(), algo.getGraph().edgeSize());
+        Assertions.assertEquals(graph.getV().size(), algo.getGraph().getV().size());
     }
 
     @Test
@@ -209,6 +204,16 @@ public class JunitTest {
 
         LinkedList<node_data> list = (LinkedList<node_data>) graph_algo3B.shortestPath(0, 7);
         Assertions.assertEquals(list.size(), 4);
+
+    }
+
+    @Test
+    public void shortestPathDist() {
+        DWGraph_DS graph = Graph_3B();
+        dw_graph_algorithms graph_algo3B = new DWGraph_Algo();
+        graph_algo3B.init(Graph_3B());
+
+        Assertions.assertEquals(graph_algo3B.shortestPathDist(0,0), 0);
 
     }
 

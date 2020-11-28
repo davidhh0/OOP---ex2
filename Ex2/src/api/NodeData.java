@@ -1,7 +1,5 @@
 package api;
 
-import org.jetbrains.annotations.NotNull;
-
 public class NodeData implements node_data {
     private int _tag;
     private int _key;

@@ -112,7 +112,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         }
         LinkedList<node_data> answer = (LinkedList<node_data>) shortestPath(src,dest);
         if(answer==null) return -1;
-        return _graph.getNode(dest).get_tag();
+        double totalSum = 0;
+        for (int i = 0; i < answer.size()-1; i++) {
+            totalSum += getGraph().getEdge(answer.get(i).get_key(),answer.get(i+1).get_key()).get_weight();
+        }
+        return totalSum;
     }
 
     /**
@@ -207,8 +211,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     /**
      * Using Gson to dump the DWGraph_DS into a json format and save it in the file.
-     * Dump the hashmap of vertices as "Vertices" key in json.
-     * Dump the hashmap of edges as "Edges" key in json.
+     * Generate JsonArray of vertices as "Nodes" key in json.
+     * Generate JsonArray of edges as "Edges" key in json.
      * And write the json string into file.
      *
      * @param file - the file name (may include a relative path).
@@ -261,7 +265,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
         return true;
     }
-
+    /**
+     * Using Gson to read the json string from file.
+     * Reading the json string from the giving path to the file.
+     * Getting the "Nodes" value from the json object and adding all vertices into the new DWGraph_DS.
+     * Getting all edges form "Edges" key and connect all nodes by the src and dest and w from JsonObject from JsonArray.
+     * @param file - the file name (may include a relative path).
+     * @return true if loaded successful
+     */
     @Override
     public boolean load(String file) {
         try{
