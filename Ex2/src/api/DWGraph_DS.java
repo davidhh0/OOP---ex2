@@ -28,13 +28,13 @@ public class DWGraph_DS implements directed_weighted_graph {
         if (this.nodeSize() != g0.nodeSize()) return false;
         if (this.edgeSize() != g0.edgeSize()) return false;
         for(node_data run : g0.getV()){ // checking all the nodes
-            if(!this.vertices.containsKey(run.get_key())) return false;
+            if(!this.vertices.containsKey(run.getKey())) return false;
         }
 
         for(node_data run:g0.getV()) {
-            for (edge_data run1 : g0.getE(run.get_key())) { // returns a collection of edges coming out from run
-                int src = run1.get_src(); int dest = run1.get_dest(); double wei = run1.get_weight();
-                if(this.getEdge(src,dest).get_weight() != wei) return false;
+            for (edge_data run1 : g0.getE(run.getKey())) { // returns a collection of edges coming out from run
+                int src = run1.getSrc(); int dest = run1.getDest(); double wei = run1.getWeight();
+                if(this.getEdge(src,dest).getWeight() != wei) return false;
             }
         }
         return true;
@@ -85,14 +85,14 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public void addNode(node_data n) {
-        if (!vertices.containsKey(n.get_key())) {
+        if (!vertices.containsKey(n.getKey())) {
             //the node is NOT in vertices:
-            vertices.put(n.get_key(), n);
+            vertices.put(n.getKey(), n);
             HashMap<Integer, edge_data> EdgesHashMap = new HashMap<>();
             ArrayList<Integer> newInComing = new ArrayList<>();
             if (edges != null)
-                edges.put(n.get_key(), EdgesHashMap);
-            inComing.put(n.get_key(),newInComing);
+                edges.put(n.getKey(), EdgesHashMap);
+            inComing.put(n.getKey(),newInComing);
             ModeCount++;
         }
     }

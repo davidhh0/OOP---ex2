@@ -21,7 +21,7 @@ public class JunitTest {
         node_data a = graph.removeNode(1);
         node_data b = graph.getNode(2);
 
-        Assertions.assertEquals(a.get_key(), n1.get_key());
+        Assertions.assertEquals(a.getKey(), n1.getKey());
     }
 
     public DWGraph_DS Graph_1B() {
@@ -173,7 +173,7 @@ public class JunitTest {
         PriorityQueue<node_data> PQ = new PriorityQueue<node_data>(initialCapacity, new Comparator<node_data>() {
             @Override
             public int compare(node_data o1, node_data o2) {
-                if (tag.get(o1.get_key()) < tag.get(o2.get_key()) )
+                if (tag.get(o1.getKey()) < tag.get(o2.getKey()) )
                      return -1;
                 else
             return 1;
@@ -189,9 +189,9 @@ public class JunitTest {
         PQ.offer(graph.getNode(1));
         PQ.offer(graph.getNode(2));
         PQ.offer(graph.getNode(3));
-        System.out.println(PQ.poll().get_key());
-        System.out.println(PQ.poll().get_key());
-        System.out.println(PQ.poll().get_key());
+        System.out.println(PQ.poll().getKey());
+        System.out.println(PQ.poll().getKey());
+        System.out.println(PQ.poll().getKey());
 
 
     }

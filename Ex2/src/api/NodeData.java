@@ -11,16 +11,16 @@ public class NodeData implements node_data {
     }
 
     @Override
-    public int get_key() {
+    public int getKey() {
         return _key;
     }
     @Override
-    public geo_location get_location() {
+    public geo_location getLocation() {
         return _location;
     }
 
     @Override
-    public void set_location(geo_location p) {
+    public void setLocation(geo_location p) {
         _location = p;
 
     }
@@ -46,12 +46,12 @@ public class NodeData implements node_data {
     }
 
     @Override
-    public int get_tag() {
+    public int getTag() {
         return _tag;
     }
 
     @Override
-    public void set_tag(int t) {
+    public void setTag(int t) {
     _tag =t;
     }
 
