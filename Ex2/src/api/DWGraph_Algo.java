@@ -52,8 +52,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         //Copying all edges
         for (node_data run : _graph.getV()) {
             if (NewGraph.edgeSize() == _graph.edgeSize()) break;
-            for (edge_data run1 : _graph.getE(run.get_key())) { // returns a collection of edges coming out from run
-                NewGraph.connect(run1.get_src(), run1.get_dest(), run1.get_weight());
+            for (edge_data run1 : _graph.getE(run.getKey())) { // returns a collection of edges coming out from run
+                NewGraph.connect(run1.getSrc(), run1.getDest(), run1.getWeight());
             }
 
         }
@@ -73,11 +73,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         }
         while (!stack.isEmpty()) {
             node_data temp = stack.pop();
-            visited.put(temp.get_key(), true);
-            for (edge_data run1 : _graph.getE(temp.get_key())) {
-                if (visited.get(run1.get_dest()) == null) {
-                    visited.put(run1.get_dest(), true);
-                    stack.push(_graph.getNode(run1.get_dest()));
+            visited.put(temp.getKey(), true);
+            for (edge_data run1 : _graph.getE(temp.getKey())) {
+                if (visited.get(run1.getDest()) == null) {
+                    visited.put(run1.getDest(), true);
+                    stack.push(_graph.getNode(run1.getDest()));
                 }
             }
         }
@@ -92,8 +92,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
         while (!stackT.isEmpty()) {
             node_data temp = stackT.pop();
-            visitedT.put(temp.get_key(), true);
-            for (Integer run1 : (((DWGraph_DS) this._graph).getInComing(temp.get_key()))) {
+            visitedT.put(temp.getKey(), true);
+            for (Integer run1 : (((DWGraph_DS) this._graph).getInComing(temp.getKey()))) {
                 if (visitedT.get(run1) == null) {
                     visitedT.put(run1, true);
                     stackT.push(_graph.getNode(run1));
@@ -114,7 +114,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         if(answer==null) return -1;
         double totalSum = 0;
         for (int i = 0; i < answer.size()-1; i++) {
-            totalSum += getGraph().getEdge(answer.get(i).get_key(),answer.get(i+1).get_key()).get_weight();
+            totalSum += getGraph().getEdge(answer.get(i).getKey(),answer.get(i+1).getKey()).getWeight();
         }
         return totalSum;
     }
@@ -149,7 +149,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         PriorityQueue<node_data> PQ = new PriorityQueue<node_data>(initialCapacity, new Comparator<node_data>() {
             @Override
             public int compare(node_data o1, node_data o2) {
-                if (tag.get(o1.get_key()) < tag.get(o2.get_key()) )
+                if (tag.get(o1.getKey()) < tag.get(o2.getKey()) )
                     return -1;
                 else
                     return 1;
@@ -158,7 +158,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         });
         boolean flag = true;
         for (node_data run : _graph.getV()) {
-            tag.put(run.get_key(),Double.POSITIVE_INFINITY);
+            tag.put(run.getKey(),Double.POSITIVE_INFINITY);
         }
         tag.put(src,0.0);
         PQ.offer(_graph.getNode(src));
@@ -166,20 +166,20 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         while (!PQ.isEmpty() && flag) {
             node_data temp = PQ.poll();
             if (visited.get(temp) == null) { // means temp wasn't visited yet
-                if (temp.get_key() == dest) {
+                if (temp.getKey() == dest) {
                     sofi = temp;
                     flag = false;
                 }
                 visited.put(temp, true);
-                for (edge_data run : _graph.getE(temp.get_key())) {
-                    if (visited.get(run.get_dest()) == null) { //means run wasn't visited
+                for (edge_data run : _graph.getE(temp.getKey())) {
+                    if (visited.get(run.getDest()) == null) { //means run wasn't visited
                         //int path = (int) (temp.get_tag() + run.get_weight());   // !!! CAST TO INT
-                        double Path = run.get_weight() + tag.get(temp.get_key());
-                        if (Path < tag.get(run.get_dest())) {
-                            tag.put(run.get_dest() , Path);
+                        double Path = run.getWeight() + tag.get(temp.getKey());
+                        if (Path < tag.get(run.getDest())) {
+                            tag.put(run.getDest() , Path);
                            // _graph.getNode(run.get_dest()).set_tag(path);
-                            parent.put(_graph.getNode(run.get_dest()), temp);
-                            PQ.offer(_graph.getNode(run.get_dest()));
+                            parent.put(_graph.getNode(run.getDest()), temp);
+                            PQ.offer(_graph.getNode(run.getDest()));
                         }
                     }
 
@@ -188,12 +188,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             }
         }
         if(sofi==null) return answer;
-        if(sofi.get_key()!=dest) return answer;
+        if(sofi.getKey()!=dest) return answer;
         boolean flag1=true;
         try{
             answer.add(_graph.getNode(dest));
             while(flag1) {
-                if (sofi.get_key() == src) {
+                if (sofi.getKey() == src) {
                     flag1 = false;
                     break;
                 }
@@ -227,13 +227,13 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         JsonArray vertices_array = new JsonArray();
         for (node_data _node : this._graph.getV()) {
             JsonObject node = new JsonObject();
-            if(_node.get_location() != null) {
-                node.addProperty("pos", ((GeoLocation) (_node.get_location())).toString());
+            if(_node.getLocation() != null) {
+                node.addProperty("pos", ((GeoLocation) (_node.getLocation())).toString());
             }
             else{
                 node.addProperty("pos", "NULL,NULL,NULL");
             }
-            node.addProperty("id", _node.get_key());
+            node.addProperty("id", _node.getKey());
             vertices_array.add(node);
         }
         //Save the edges
@@ -243,9 +243,9 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         for (Map.Entry<Integer, HashMap<Integer, edge_data>> entry: ((DWGraph_DS) this._graph).getEdges().entrySet()) {
             for (Map.Entry<Integer, edge_data> entry1 : entry.getValue().entrySet()) {
                 JsonObject edge = new JsonObject();
-                edge.addProperty("src", entry1.getValue().get_src());
-                edge.addProperty("w", entry1.getValue().get_weight());
-                edge.addProperty("dest", entry1.getValue().get_dest());
+                edge.addProperty("src", entry1.getValue().getSrc());
+                edge.addProperty("w", entry1.getValue().getWeight());
+                edge.addProperty("dest", entry1.getValue().getDest());
                 edges_array.add(edge);
             }
         }
@@ -299,7 +299,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                 }
                 else{
                     GeoLocation geo = new GeoLocation(Double.parseDouble(x),Double.parseDouble(y),Double.parseDouble(z));
-                    node.set_location(geo);
+                    node.setLocation(geo);
 
                 }
                 this._graph.addNode(node);

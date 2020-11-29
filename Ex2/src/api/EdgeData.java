@@ -11,17 +11,17 @@ public class EdgeData implements edge_data {
         _tag=0;
     }
     @Override
-    public int get_src() {
+    public int getSrc() {
         return _src;
     }
 
     @Override
-    public int get_dest() {
+    public int getDest() {
         return _dest;
     }
 
     @Override
-    public double get_weight() {
+    public double getWeight() {
         return _weight;
     }
 
@@ -36,12 +36,12 @@ public class EdgeData implements edge_data {
     }
 
     @Override
-    public int get_tag() {
+    public int getTag() {
         return _tag;
     }
 
     @Override
-    public void set_tag(int t) {
+    public void setTag(int t) {
         _tag =t;
     }
 }
