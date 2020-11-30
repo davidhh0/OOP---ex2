@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import gameClient.util.PokemonEdge;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +20,8 @@ import java.util.List;
 public class Ex2_Client implements Runnable{
 	private static MyFrame _win;
 	private static Arena _ar;
+
+	private static ArrayList<PokemonEdge> pokemonEdges;
 	public static void main(String[] a) {
 		Thread client = new Thread(new Ex2_Client());
 		client.start();
@@ -39,7 +42,7 @@ public class Ex2_Client implements Runnable{
 		_win.setTitle("Ex2 - OOP: (NONE trivial Solution) "+game.toString());
 		int ind=0;
 		long dt=100;
-		
+
 		while(game.isRunning()) {
 			moveAgants(game, gg);
 			try {
@@ -71,7 +74,7 @@ public class Ex2_Client implements Runnable{
 		String fs =  game.getPokemons();
 		List<CL_Pokemon> ffs = Arena.json2Pokemons(fs);
 		_ar.setPokemons(ffs);
-		getNextEdge(fs, gg);
+		pokemonEdges = getNextEdge(fs, gg);
 
 		for(int i=0;i<log.size();i++) {
 			CL_Agent ag = log.get(i);
@@ -87,33 +90,55 @@ public class Ex2_Client implements Runnable{
 		}
 	}
 
-	private static int getNextEdge(String pokemons, directed_weighted_graph graph){
+	private static ArrayList<PokemonEdge> getNextEdge(String pokemons, directed_weighted_graph graph){
+
 		Gson gson = new Gson();
 		Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
+		ArrayList<PokemonEdge> pokemon_Edges = new ArrayList<>();
 		JsonObject poke = gson.fromJson(pokemons, JsonObjectType);
 		JsonArray pok_array = poke.get("Pokemons").getAsJsonArray();
+
 		for(JsonElement pok : pok_array){
+
 			//For each pokemon need to find the edge he is on
+
 			JsonObject pokemon_obj = pok.getAsJsonObject();
+
 			JsonObject pokemon = pokemon_obj.get("Pokemon").getAsJsonObject();
 			String[] pok_location = pokemon.get("pos").getAsString().split(",");
+
 			double pokemon_x = Double.parseDouble(pok_location[0]);
 			double pokemon_y = Double.parseDouble(pok_location[1]);
+
 			geo_location pokemon_geo = new GeoLocation(pokemon_x,pokemon_y,0.0);
 
 			for(node_data node : graph.getV()){
+
 				for(edge_data edge : graph.getE(node.getKey())){
+					PokemonEdge pokemonEdge;
 					geo_location location1 = graph.getNode(edge.getSrc()).getLocation();
 					geo_location location2 = graph.getNode(edge.getDest()).getLocation();
 
-					if(Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) -  location1.distance(location2)) < 0.0001){
-						System.out.println(String.format("Found the pokemon on edge from %d to %d ", edge.getSrc(), edge.getDest()) );
+
+					//Type 1 = from big to small
+					//Type -1 = from small to big
+					if(Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) -  location1.distance(location2)) < 0.00005){
+						if(pokemon.get("type").getAsInt() == 1 && edge.getSrc() < edge.getDest()) {
+							//System.out.println(String.format("Found the pokemon on edge from %d to %d on coordinates (%f,%f) ", edge.getSrc(), edge.getDest(), (float) pokemon_geo.x(), (float) pokemon_geo.y()));
+							pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble());
+							pokemon_Edges.add(pokemonEdge);
+						}
+						else if(pokemon.get("type").getAsInt() == -1 && edge.getSrc() > edge.getDest()){
+							//System.out.println(String.format("Found the pokemon on edge from %d to %d on coordinates (%f,%f) ", edge.getSrc(), edge.getDest(), (float) pokemon_geo.x(), (float) pokemon_geo.y()));
+							pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble());
+							pokemon_Edges.add(pokemonEdge);
+						}
 					}
 				}
 			}
 		}
 
-		return -1;
+		return pokemon_Edges;
 
 	}
 
@@ -127,15 +152,37 @@ public class Ex2_Client implements Runnable{
 		int ans = -1;
 		DWGraph_Algo algo = new DWGraph_Algo();
 		algo.init(g);
+		//Finding the most closest pokemon
+		int closestPokIndex = -1;
+		double closestPok = Double.MAX_VALUE;
+		for (int i = 0; i <pokemonEdges.size(); i++) {
+			double dist =  algo.shortestPathDist(src, pokemonEdges.get(i).get_src());
+			if(closestPok > algo.shortestPathDist(src, pokemonEdges.get(i).get_src())){
+				closestPokIndex = i;
+				closestPok = dist;
+			}
+		}
+		System.out.println("Closest Pokemon " +  pokemonEdges.get(closestPokIndex));
+		if(src == pokemonEdges.get(closestPokIndex).get_src()){
+			return pokemonEdges.get(closestPokIndex).get_dest();
+		}
 
-		Collection<edge_data> ee = g.getE(src);
-		Iterator<edge_data> itr = ee.iterator();
-		int s = ee.size();
-		int r = (int)(Math.random()*s);
-		int i=0;
-		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
-		return ans;
+		List<node_data> path = algo.shortestPath(src,pokemonEdges.get(closestPokIndex).get_src());
+		return path.get(1).getKey();
+
+
+
+//		List<node_data> path = algo.shortestPath(src, pokemonEdges.get(0).get_dest());
+
+//		return path.get(0).getKey();
+//		Collection<edge_data> ee = g.getE(src);
+//		Iterator<edge_data> itr = ee.iterator();
+//		int s = ee.size();
+//		int r = (int)(Math.random()*s);
+//		int i=0;
+//		while(i<r) {itr.next();i++;}
+//		ans = itr.next().getDest();
+//		return ans;
 	}
 	private void init(game_service game) {
 		String g = game.getGraph();
