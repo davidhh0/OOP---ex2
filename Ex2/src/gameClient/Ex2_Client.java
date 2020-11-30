@@ -1,12 +1,16 @@
 package gameClient;
 
 import Server.Game_Server_Ex2;
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.game_service;
+import api.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,7 +26,7 @@ public class Ex2_Client implements Runnable{
 	
 	@Override
 	public void run() {
-		int scenario_num = 11;
+		int scenario_num = 14;
 		game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
 	//	int id = 999;
 	//	game.login(id);
@@ -30,7 +34,7 @@ public class Ex2_Client implements Runnable{
 		String pks = game.getPokemons();
 		directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
 		init(game);
-		
+
 		game.startGame();
 		_win.setTitle("Ex2 - OOP: (NONE trivial Solution) "+game.toString());
 		int ind=0;
@@ -67,6 +71,8 @@ public class Ex2_Client implements Runnable{
 		String fs =  game.getPokemons();
 		List<CL_Pokemon> ffs = Arena.json2Pokemons(fs);
 		_ar.setPokemons(ffs);
+		getNextEdge(fs, gg);
+
 		for(int i=0;i<log.size();i++) {
 			CL_Agent ag = log.get(i);
 			int id = ag.getID();
@@ -80,6 +86,37 @@ public class Ex2_Client implements Runnable{
 			}
 		}
 	}
+
+	private static int getNextEdge(String pokemons, directed_weighted_graph graph){
+		Gson gson = new Gson();
+		Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
+		JsonObject poke = gson.fromJson(pokemons, JsonObjectType);
+		JsonArray pok_array = poke.get("Pokemons").getAsJsonArray();
+		for(JsonElement pok : pok_array){
+			//For each pokemon need to find the edge he is on
+			JsonObject pokemon_obj = pok.getAsJsonObject();
+			JsonObject pokemon = pokemon_obj.get("Pokemon").getAsJsonObject();
+			String[] pok_location = pokemon.get("pos").getAsString().split(",");
+			double pokemon_x = Double.parseDouble(pok_location[0]);
+			double pokemon_y = Double.parseDouble(pok_location[1]);
+			geo_location pokemon_geo = new GeoLocation(pokemon_x,pokemon_y,0.0);
+
+			for(node_data node : graph.getV()){
+				for(edge_data edge : graph.getE(node.getKey())){
+					geo_location location1 = graph.getNode(edge.getSrc()).getLocation();
+					geo_location location2 = graph.getNode(edge.getDest()).getLocation();
+
+					if(Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) -  location1.distance(location2)) < 0.0001){
+						System.out.println(String.format("Found the pokemon on edge from %d to %d ", edge.getSrc(), edge.getDest()) );
+					}
+				}
+			}
+		}
+
+		return -1;
+
+	}
+
 	/**
 	 * a very simple random walk implementation!
 	 * @param g
@@ -88,6 +125,9 @@ public class Ex2_Client implements Runnable{
 	 */
 	private static int nextNode(directed_weighted_graph g, int src) {
 		int ans = -1;
+		DWGraph_Algo algo = new DWGraph_Algo();
+		algo.init(g);
+
 		Collection<edge_data> ee = g.getE(src);
 		Iterator<edge_data> itr = ee.iterator();
 		int s = ee.size();
