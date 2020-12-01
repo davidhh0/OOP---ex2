@@ -27,255 +27,256 @@ import javax.swing.JOptionPane;
  * code and not to take it "as is".
  */
 public class MyFrame extends JFrame {
-    private int _ind;
-    private Arena _ar;
-    private gameClient.util.Range2Range _w2f;
-    private Image _buffer_img;
-    private Graphics _buffer_graphics;
-    private int _win_h = 1000;
-    private int _win_w = 600;
-    private JFrame frame;
+	private int _ind;
+	private Arena _ar;
+	private gameClient.util.Range2Range _w2f;
+	private Image _buffer_img;
+	private Graphics _buffer_graphics;
+	private int _win_h = 1000;
+	private int _win_w = 600;
+	private JFrame frame;
 
-    MyFrame(String a) {
-        super(a);
-        int _ind = 0;
-        init();
-    }
+	MyFrame(String a) {
+		super(a);
+		int _ind = 0;
+		init();
+	}
 
-    public void init() {
+	public void init() {
 
-        this.setSize(_win_h, _win_w);
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.setTitle("Ex2 - OOP");
-        frame = this;
-        MenuBar menu_bar = new MenuBar();
-        Menu menu = new Menu("File");
-        Menu data = new Menu("Data");
-        menu_bar.add(menu);
-        menu_bar.add(data);
-        this.setMenuBar(menu_bar);
-        MenuItem file_save_photo = new MenuItem("Save photo");
-        MenuItem file_close = new MenuItem("Close");
-        MenuItem file_restart = new MenuItem("Restart(not working)");
-        MenuItem data_nodes = new MenuItem("Nodes");
-        Toolkit.getDefaultToolkit().setDynamicLayout(false);
-        file_save_photo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Save photo clicked");
-                try { //saves the image
-                    // retrieve image
-                    String nameOfPhoto = JOptionPane.showInputDialog("Enter a photo name: ");
-                    nameOfPhoto = nameOfPhoto;
-                    boolean isNull = nameOfPhoto == null;
-                    if (!isNull) {
-                        nameOfPhoto = nameOfPhoto + ".png";
-                        BufferedImage bi = getScreenShot(frame.getContentPane());
-                        File outputfile = new File(nameOfPhoto);
-                        ImageIO.write(bi, "png", outputfile);
-                    }
-                } catch (AWTException | IOException e1) {
-                    e1.printStackTrace();
-                }
+		this.setSize(_win_h, _win_w);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setTitle("Ex2 - OOP");
+		frame = this;
+		MenuBar menu_bar = new MenuBar();
+		Menu menu = new Menu("File");
+		Menu data = new Menu("Data");
+		menu_bar.add(menu);
+		menu_bar.add(data);
+		this.setMenuBar(menu_bar);
+		MenuItem file_save_photo = new MenuItem("Save photo");
+		MenuItem file_close = new MenuItem("Close");
+		MenuItem file_restart = new MenuItem("Restart(not working)");
+		MenuItem data_nodes = new MenuItem("Nodes");
+		Toolkit.getDefaultToolkit().setDynamicLayout(false);
+		file_save_photo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Save photo clicked");
+				try { //saves the image
+					// retrieve image
+					String nameOfPhoto = JOptionPane.showInputDialog("Enter a photo name: ");
+					nameOfPhoto = nameOfPhoto;
+					boolean isNull = nameOfPhoto == null;
+					if (!isNull) {
+						nameOfPhoto = nameOfPhoto + ".png";
+						BufferedImage bi = getScreenShot(frame.getContentPane());
+						File outputfile = new File(nameOfPhoto);
+						ImageIO.write(bi, "png", outputfile);
+					}
+				} catch (AWTException | IOException e1) {
+					e1.printStackTrace();
+				}
 
-            }
-        });
-        file_close.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Closing..", JOptionPane.YES_NO_OPTION);
-                if (i == 0) {
-                    frame.dispose();
-                    System.exit(0);
-                }
-            }
-        });
+			}
+		});
+		file_close.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Closing..", JOptionPane.YES_NO_OPTION);
+				if (i == 0) {
+					frame.dispose();
+					System.exit(0);
+				}
+			}
+		});
 
-        file_restart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Restarting..", JOptionPane.YES_NO_OPTION);
-                if (i == 0) {
-                    Thread client = new Thread(new Ex2_Client());
-                    client.start();
-                    Ex2_Client.stop();
-                    //init();
-                }
-            }
-        });
-        this.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Closing..", JOptionPane.YES_NO_OPTION);
-                if (i == 0) {
-                    frame.dispose();
-                    System.exit(0);
-                }
-            }
+		file_restart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Restarting..", JOptionPane.YES_NO_OPTION);
+				if (i == 0) {
+					Thread client = new Thread(new Ex2_Client());
+					client.start();
+					Ex2_Client.stop();
+					//init();
+				}
+			}
+		});
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Closing..", JOptionPane.YES_NO_OPTION);
+				if (i == 0) {
+					frame.dispose();
+					System.exit(0);
+				}
+			}
 
-        });
-
-
-        this.getRootPane().addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                // This is only called when the user releases the mouse button.
-
-                int newHeight = e.getComponent().getHeight();
-                int newWidth = e.getComponent().getWidth();
-                if (frame.isActive()) {
-                    frame.getContentPane().setPreferredSize(new Dimension(newWidth, newHeight));
-                    pack();
-                    updateFrame();
-                }
-
-            }
-        });
-
-        data_nodes.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-        menu.add(file_save_photo);
-        menu.add(file_restart);
-        menu.add(file_close);
-        data.add(data_nodes);
+		});
 
 
-    }
+		this.getRootPane().addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				// This is only called when the user releases the mouse button.
 
-    private static Image createImage() {
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File("oneImg.png"));
-        } catch (IOException e) {
-        }
-        return img;
-    }
+				int newHeight = e.getComponent().getHeight();
+				int newWidth = e.getComponent().getWidth();
+				if (frame.isActive()) {
+					frame.getContentPane().setPreferredSize(new Dimension(newWidth, newHeight));
+					pack();
+					updateFrame();
+				}
 
-    private static BufferedImage getScreenShot(Component component) throws AWTException {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
-        Robot robot = new Robot(gd);
-        Rectangle bounds = new Rectangle(component.getLocationOnScreen(), component.getSize());
-        return robot.createScreenCapture(bounds);
-    }
+			}
+		});
 
+		data_nodes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 
-    public void update(Arena ar) {
-        this._ar = ar;
-        updateFrame();
-    }
-
-    private void updateFrame() {
-        Range rx = new Range(20, this.getWidth() - 20);
-        Range ry = new Range(this.getHeight() - 10, 150);
-        Range2D frame = new Range2D(rx, ry);
-        directed_weighted_graph g = _ar.getGraph();
-        _w2f = Arena.w2f(g, frame);
-
-    }
-
-    public void paint(Graphics g) {
-        _buffer_img = createImage(this.getWidth(), this.getHeight());
-        _buffer_graphics = _buffer_img.getGraphics();
+			}
+		});
+		menu.add(file_save_photo);
+		menu.add(file_restart);
+		menu.add(file_close);
+		data.add(data_nodes);
 
 
-        int w = this.getWidth();
-        int h = this.getHeight();
-        g.clearRect(0, 0, w, h);
-        //	updateFrame();
-        drawPokemons(_buffer_graphics);
-        drawGraph(_buffer_graphics);
-        drawAgants(_buffer_graphics);
-        drawInfo(_buffer_graphics);
+	}
 
-        g.drawImage(_buffer_img, 0, 0, this);
+	private static Image createImage() {
+		BufferedImage img = null;
+		try {
+			img = ImageIO.read(new File("oneImg.png"));
+		} catch (IOException e) {
+		}
+		return img;
+	}
 
-    }
+	private static BufferedImage getScreenShot(Component component) throws AWTException {
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice gd = ge.getDefaultScreenDevice();
+		Robot robot = new Robot(gd);
+		Rectangle bounds = new Rectangle(component.getLocationOnScreen(), component.getSize());
+		return robot.createScreenCapture(bounds);
+	}
 
-    private void drawInfo(Graphics g) {
-        List<String> str = _ar.get_info();
-        String dt = "none";
-        for (int i = 0; i < str.size(); i++) {
-            g.drawString(str.get(i) + " dt: " + dt, 100, 60 + i * 20);
-        }
 
-    }
+	public void update(Arena ar) {
+		this._ar = ar;
+		updateFrame();
+	}
 
-    private void drawGraph(Graphics g) {
+	private void updateFrame() {
+		Range rx = new Range(20, this.getWidth() - 20);
+		Range ry = new Range(this.getHeight() - 10, 150);
+		Range2D frame = new Range2D(rx, ry);
+		directed_weighted_graph g = _ar.getGraph();
+		_w2f = Arena.w2f(g, frame);
 
-        directed_weighted_graph gg = _ar.getGraph();
-        Iterator<node_data> iter = gg.getV().iterator();
-        while (iter.hasNext()) {
-            node_data n = iter.next();
-            g.setColor(Color.blue);
-            drawNode(n, 5, g);
-            Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
-            while (itr.hasNext()) {
-                edge_data e = itr.next();
-                g.setColor(Color.gray);
-                drawEdge(e, g);
-            }
-        }
-    }
+	}
 
-    private void drawPokemons(Graphics g) {
-        List<CL_Pokemon> fs = _ar.getPokemons();
-        if (fs != null) {
-            Iterator<CL_Pokemon> itr = fs.iterator();
+	public void paint(Graphics g) {
+		_buffer_img = createImage(this.getWidth(), this.getHeight());
+		_buffer_graphics = _buffer_img.getGraphics();
 
-            while (itr.hasNext()) {
+		int w = this.getWidth();
+		int h = this.getHeight();
+		//g.clearRect(0, 0, w, h);
+		//	updateFrame();
+		drawPokemons(_buffer_graphics);
+		drawGraph(_buffer_graphics);
+		drawAgants(_buffer_graphics);
+		drawInfo(_buffer_graphics);
 
-                CL_Pokemon f = itr.next();
-                Point3D c = f.getLocation();
-                int r = 10;
-                g.setColor(Color.green);
-                if (f.getType() < 0) {
-                    g.setColor(Color.orange);
-                }
-                if (c != null) {
+		g.drawImage(_buffer_img, 0, 0, this);
 
-                    geo_location fp = this._w2f.world2frame(c);
-                    g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-                    //	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+	}
 
-                }
-            }
-        }
-    }
+	private void drawInfo(Graphics g) {
+		List<String> str = _ar.get_info();
+		String dt = "none";
+		for (int i = 0; i < str.size(); i++) {
+			g.drawString(str.get(i) + " dt: " + dt, 100, 60 + i * 20);
+		}
 
-    private void drawAgants(Graphics g) {
-        List<CL_Agent> rs = _ar.getAgents();
-        //	Iterator<OOP_Point3D> itr = rs.iterator();
-        g.setColor(Color.red);
-        int i = 0;
-        while (rs != null && i < rs.size()) {
-            geo_location c = rs.get(i).getLocation();
-            int r = 8;
-            i++;
-            if (c != null) {
+	}
 
-                geo_location fp = this._w2f.world2frame(c);
-                g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-            }
-        }
-    }
+	private void drawGraph(Graphics g) {
 
-    private void drawNode(node_data n, int r, Graphics g) {
-        geo_location pos = n.getLocation();
-        geo_location fp = this._w2f.world2frame(pos);
-        g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-        g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 4 * r);
-    }
+		directed_weighted_graph gg = _ar.getGraph();
+		Iterator<node_data> iter = gg.getV().iterator();
+		while (iter.hasNext()) {
+			node_data n = iter.next();
+			g.setColor(Color.blue);
+			drawNode(n, 6, g);
+			Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
+			while (itr.hasNext()) {
+				edge_data e = itr.next();
+				g.setColor(Color.gray);
+				drawEdge(e, g);
+			}
+		}
+	}
 
-    private void drawEdge(edge_data e, Graphics g) {
-        directed_weighted_graph gg = _ar.getGraph();
-        geo_location s = gg.getNode(e.getSrc()).getLocation();
-        geo_location d = gg.getNode(e.getDest()).getLocation();
-        geo_location s0 = this._w2f.world2frame(s);
-        geo_location d0 = this._w2f.world2frame(d);
-        g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-        //	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
-    }
+	private void drawPokemons(Graphics g) {
+		List<CL_Pokemon> fs = _ar.getPokemons();
+		if (fs != null) {
+			Iterator<CL_Pokemon> itr = fs.iterator();
+
+			while (itr.hasNext()) {
+
+				CL_Pokemon f = itr.next();
+				Point3D c = f.getLocation();
+				int r = 10;
+				g.setColor(Color.green);
+				if (f.getType() < 0) {
+					g.setColor(Color.orange);
+				}
+				if (c != null) {
+
+					geo_location fp = this._w2f.world2frame(c);
+					g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+					//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+
+				}
+			}
+		}
+	}
+
+	private void drawAgants(Graphics g) {
+		List<CL_Agent> rs = _ar.getAgents();
+		//	Iterator<OOP_Point3D> itr = rs.iterator();
+		g.setColor(Color.red);
+		int i = 0;
+		while (rs != null && i < rs.size()) {
+			geo_location c = rs.get(i).getLocation();
+			int r = 8;
+			i++;
+			if (c != null) {
+
+				geo_location fp = this._w2f.world2frame(c);
+				g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+			}
+		}
+	}
+
+	private void drawNode(node_data n, int r, Graphics g) {
+		geo_location pos = n.getLocation();
+		geo_location fp = this._w2f.world2frame(pos);
+		g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+		g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 4 * r);
+	}
+
+	private void drawEdge(edge_data e, Graphics g) {
+		directed_weighted_graph gg = _ar.getGraph();
+		geo_location s = gg.getNode(e.getSrc()).getLocation();
+		geo_location d = gg.getNode(e.getDest()).getLocation();
+		geo_location s0 = this._w2f.world2frame(s);
+		geo_location d0 = this._w2f.world2frame(d);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setStroke(new BasicStroke(2.5F));
+		g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
+		//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+	}
 }
