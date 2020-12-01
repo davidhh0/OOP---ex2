@@ -70,5 +70,22 @@ public class Point3D implements geo_location, Serializable{
         if(all) return "[" + _x + "," +_y+","+_z+"]";
         else return "[" + (int)_x + "," + (int)_y+","+(int)_z+"]";
     }
+
+    public void setX(int x) {
+        this._x=x;
+    }
+
+    public void setY(int y) {
+        this._y=y;
+    }
+    public double distance3D(Point3D p2)
+    {
+        double dx = this.x() - p2.x();
+        double dy = this.y() - p2.y();
+        double dz = this.z() - p2.z();
+        double t = (dx*dx+dy*dy+dz*dz);
+        return Math.sqrt(t);
+    }
+
 }
 
