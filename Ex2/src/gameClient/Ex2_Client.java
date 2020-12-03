@@ -12,16 +12,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Ex2_Client implements Runnable{
 	private static MyFrame _win;
 	private static Arena _ar;
 
-	private static ArrayList<PokemonEdge> pokemonEdges;
+	private static HashMap<Integer, Integer> PokemonToAgent = new HashMap<>();
+	private static HashMap<Integer, List<node_data>> AgentToPath = new HashMap<>();
+	private static HashMap<Integer, Integer> LastOne = new HashMap<>();
+
+
 	public static void main(String[] a) {
 		Thread client = new Thread(new Ex2_Client());
 		client.start();
@@ -29,10 +30,10 @@ public class Ex2_Client implements Runnable{
 	
 	@Override
 	public void run() {
-		int scenario_num = 14;
+		int scenario_num = 23;
 		game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
-	//	int id = 999;
-	//	game.login(id);
+	 	//int id = 999;
+		//game.login(id);
 		String g = game.getGraph();
 		String pks = game.getPokemons();
 		directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
@@ -72,25 +73,58 @@ public class Ex2_Client implements Runnable{
 		_ar.setAgents(log);
 		//ArrayList<OOP_Point3D> rs = new ArrayList<OOP_Point3D>();
 		String fs =  game.getPokemons();
-		List<CL_Pokemon> ffs = Arena.json2Pokemons(fs);
+		List<CL_Pokemon> ffs = Arena.json2Pokemons(fs,gg);
 		_ar.setPokemons(ffs);
-		pokemonEdges = getNextEdge(fs, gg);
+//		pokemonEdges = FindPokemonsLocation(fs, gg);
 
-		for(int i=0;i<log.size();i++) {
-			CL_Agent ag = log.get(i);
+		//Priority queue from slowest agent to the fastest
+		PriorityQueue<CL_Agent> agentsQ = new PriorityQueue<>(new Comparator<CL_Agent>() {
+			@Override
+			public int compare(CL_Agent o1, CL_Agent o2) {
+				if(o1.getSpeed()>o2.getSpeed()) return 1;
+				if(o1.getSpeed()<o2.getSpeed()) return -1;
+				return 0;
+			}
+		});
+		//Adding all agents
+		for(CL_Agent agent : log){
+			agentsQ.add(agent);
+		}
+		List<CL_Pokemon> pokemonsList = Arena.json2Pokemons(fs,gg);
+
+		while(!agentsQ.isEmpty()){
+			CL_Agent ag = agentsQ.poll();
 			int id = ag.getID();
 			int dest = ag.getNextNode();
 			int src = ag.getSrcNode();
 			double v = ag.getValue();
 			if(dest==-1) {
-				dest = nextNode(gg, src);
+				dest = nextNode(gg, src, pokemonsList, id);
 				game.chooseNextEdge(ag.getID(), dest);
 				System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
 			}
 		}
+
+//		for(int i=0;i<log.size();i++) {
+//			CL_Agent ag = log.get(i);
+//			int id = ag.getID();
+//			int dest = ag.getNextNode();
+//			int src = ag.getSrcNode();
+//			double v = ag.getValue();
+//			if(!OnceFlag){
+//				AgentMap agent = new AgentMap(id,0);
+//				AgentsMapping.put(id, agent);
+//			}
+//			if(dest==-1) {
+//				dest = nextNode(gg, src, id);
+//				game.chooseNextEdge(ag.getID(), dest);
+//				System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+//			}
+//		}
+//		OnceFlag=true;
 	}
 
-	private static ArrayList<PokemonEdge> getNextEdge(String pokemons, directed_weighted_graph graph){
+	private static ArrayList<PokemonEdge> FindPokemonsLocation(String pokemons, directed_weighted_graph graph){
 
 		Gson gson = new Gson();
 		Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
@@ -122,15 +156,19 @@ public class Ex2_Client implements Runnable{
 
 					//Type 1 = from big to small
 					//Type -1 = from small to big
-					if(Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) -  location1.distance(location2)) < 0.00005){
+
+					if(Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) -  location1.distance(location2)) < Math.exp(-35)){
 						if(pokemon.get("type").getAsInt() == 1 && edge.getSrc() < edge.getDest()) {
 							//System.out.println(String.format("Found the pokemon on edge from %d to %d on coordinates (%f,%f) ", edge.getSrc(), edge.getDest(), (float) pokemon_geo.x(), (float) pokemon_geo.y()));
-							pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble());
+
+							int id = (int)(pokemon.get("type").getAsInt() * pokemon.get("value").getAsInt() * (pokemon_x - pokemon_y)*1000000);
+							pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble(),id);
 							pokemon_Edges.add(pokemonEdge);
 						}
 						else if(pokemon.get("type").getAsInt() == -1 && edge.getSrc() > edge.getDest()){
 							//System.out.println(String.format("Found the pokemon on edge from %d to %d on coordinates (%f,%f) ", edge.getSrc(), edge.getDest(), (float) pokemon_geo.x(), (float) pokemon_geo.y()));
-							pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble());
+							int id = (int)(pokemon.get("type").getAsInt() * pokemon.get("value").getAsInt() * (pokemon_x - pokemon_y)*1000000);
+							pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble(),id);
 							pokemon_Edges.add(pokemonEdge);
 						}
 					}
@@ -148,42 +186,69 @@ public class Ex2_Client implements Runnable{
 	 * @param src
 	 * @return
 	 */
-	private static int nextNode(directed_weighted_graph g, int src) {
+	private static int nextNode(directed_weighted_graph g, int src, List<CL_Pokemon> pokemonList, int agentID) {
+
 		int ans = -1;
+		//If Last one return dest
+		if(LastOne.containsKey(agentID)){
+			int pokID = LastOne.get(agentID);
+			LastOne.remove(agentID);
+			for(CL_Pokemon pok : pokemonList){
+				if(pok.get_id()==pokID){
+					return pok.get_edge().getDest();
+				}
+			}
+		}
+
+
+		//If agent has path to pokemon
+		if(AgentToPath.containsKey(agentID) && AgentToPath.get(agentID).size()>0){
+			List<node_data> path= AgentToPath.get(agentID);
+			node_data element = path.remove(0);
+			//Was the last one
+			if(AgentToPath.get(agentID).size()==0){
+				int pokID = -1;
+				for(Map.Entry<Integer,Integer> entry : PokemonToAgent.entrySet()){
+					if(entry.getValue() == agentID){
+						pokID=entry.getKey();
+						break;
+					}
+				}
+				LastOne.put(agentID,pokID);
+				PokemonToAgent.remove(pokID);
+			}
+			return element.getKey();
+		}
+		//If dosent have path to pokemon
+
 		DWGraph_Algo algo = new DWGraph_Algo();
 		algo.init(g);
+
 		//Finding the most closest pokemon
 		int closestPokIndex = -1;
 		double closestPok = Double.MAX_VALUE;
-		for (int i = 0; i <pokemonEdges.size(); i++) {
-			double dist =  algo.shortestPathDist(src, pokemonEdges.get(i).get_src());
-			if(closestPok > algo.shortestPathDist(src, pokemonEdges.get(i).get_src())){
+
+
+		for (int i = 0; i <pokemonList.size(); i++) {
+			double dist =  algo.shortestPathDist(src, pokemonList.get(i).get_edge().getSrc());
+			if(closestPok > algo.shortestPathDist(src, pokemonList.get(i).get_edge().getSrc()) && !PokemonToAgent.containsKey(pokemonList.get(i).get_id())){
 				closestPokIndex = i;
 				closestPok = dist;
 			}
 		}
-		System.out.println("Closest Pokemon " +  pokemonEdges.get(closestPokIndex));
-		if(src == pokemonEdges.get(closestPokIndex).get_src()){
-			return pokemonEdges.get(closestPokIndex).get_dest();
+
+		//if found the pokemon
+		if(closestPokIndex!=-1){
+			PokemonToAgent.put(pokemonList.get(closestPokIndex).get_id(), agentID);
+			List<node_data> path = algo.shortestPath(src, pokemonList.get(closestPokIndex).get_edge().getSrc());
+			node_data first = path.remove(0);
+			AgentToPath.put(agentID,path);
+			return first.getKey();
 		}
+		return -1;
 
-		List<node_data> path = algo.shortestPath(src,pokemonEdges.get(closestPokIndex).get_src());
-		return path.get(1).getKey();
-
-
-
-//		List<node_data> path = algo.shortestPath(src, pokemonEdges.get(0).get_dest());
-
-//		return path.get(0).getKey();
-//		Collection<edge_data> ee = g.getE(src);
-//		Iterator<edge_data> itr = ee.iterator();
-//		int s = ee.size();
-//		int r = (int)(Math.random()*s);
-//		int i=0;
-//		while(i<r) {itr.next();i++;}
-//		ans = itr.next().getDest();
-//		return ans;
 	}
+
 	private void init(game_service game) {
 		String g = game.getGraph();
 		String fs = game.getPokemons();
@@ -191,7 +256,7 @@ public class Ex2_Client implements Runnable{
 		//gg.init(g);
 		_ar = new Arena();
 		_ar.setGraph(gg);
-		_ar.setPokemons(Arena.json2Pokemons(fs));
+		_ar.setPokemons(Arena.json2Pokemons(fs,gg));
 		_win = new MyFrame("test Ex2");
 		_win.setSize(1000, 700);
 		_win.update(_ar);
@@ -207,7 +272,7 @@ public class Ex2_Client implements Runnable{
 			System.out.println(info);
 			System.out.println(game.getPokemons());
 			int src_node = 0;  // arbitrary node, you should start at one of the pokemon
-			ArrayList<CL_Pokemon> cl_fs = Arena.json2Pokemons(game.getPokemons());
+			ArrayList<CL_Pokemon> cl_fs = Arena.json2Pokemons(game.getPokemons(),gg);
 			for(int a = 0;a<cl_fs.size();a++) { Arena.updateEdge(cl_fs.get(a),gg);}
 			for(int a = 0;a<rs;a++) {
 				int ind = a%cl_fs.size();

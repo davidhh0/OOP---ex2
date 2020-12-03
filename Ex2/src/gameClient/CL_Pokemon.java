@@ -10,11 +10,17 @@ public class CL_Pokemon {
 	private Point3D _pos;
 	private double min_dist;
 	private int min_ro;
-	
-	public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
+
+	public int get_id() {
+		return _id;
+	}
+
+	private int _id;
+	public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e, int id) {
 		_type = t;
 	//	_speed = s;
 		_value = v;
+		_id = id;
 		set_edge(e);
 		_pos = p;
 		min_dist = -1;
