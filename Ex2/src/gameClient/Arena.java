@@ -1,17 +1,17 @@
 package gameClient;
 
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.geo_location;
-import api.node_data;
-import gameClient.util.Point3D;
-import gameClient.util.Range;
-import gameClient.util.Range2D;
-import gameClient.util.Range2Range;
+import api.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import gameClient.util.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -93,7 +93,7 @@ public class Arena {
 		}
 		return ans;
 	}
-	public static ArrayList<CL_Pokemon> json2Pokemons(String fs) {
+	public static ArrayList<CL_Pokemon> json2Pokemons(String fs, directed_weighted_graph graph) {
 		ArrayList<CL_Pokemon> ans = new  ArrayList<CL_Pokemon>();
 		try {
 			JSONObject ttt = new JSONObject(fs);
@@ -104,14 +104,76 @@ public class Arena {
 				int t = pk.getInt("type");
 				double v = pk.getDouble("value");
 				//double s = 0;//pk.getDouble("speed");
+
 				String p = pk.getString("pos");
-				CL_Pokemon f = new CL_Pokemon(new Point3D(p), t, v, 0, null);
+				edge_data edge = FindPokemonsLocation(p,graph, t);
+				String[] pok_location = p.split(",");
+
+				double pokemon_x = Double.parseDouble(pok_location[0]);
+				double pokemon_y = Double.parseDouble(pok_location[1]);
+				int id = (int)(t * v * (pokemon_x - pokemon_y)*1000000);
+
+				CL_Pokemon f = new CL_Pokemon(new Point3D(p), t, v, 0, edge,id);
 				ans.add(f);
 			}
 		}
 		catch (JSONException e) {e.printStackTrace();}
 		return ans;
 	}
+	private static edge_data FindPokemonsLocation(String pos, directed_weighted_graph graph, int type) {
+
+		//For each pokemon need to find the edge he is on
+
+
+		String[] pok_location = pos.split(",");
+
+		double pokemon_x = Double.parseDouble(pok_location[0]);
+		double pokemon_y = Double.parseDouble(pok_location[1]);
+
+		geo_location pokemon_geo = new GeoLocation(pokemon_x, pokemon_y, 0.0);
+
+		for (node_data node : graph.getV()) {
+
+			for (edge_data edge : graph.getE(node.getKey())) {
+				geo_location location1 = graph.getNode(edge.getSrc()).getLocation();
+				geo_location location2 = graph.getNode(edge.getDest()).getLocation();
+
+
+				//Type 1 = from big to small
+				//Type -1 = from small to big
+
+				if (Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) - location1.distance(location2)) < Math.exp(-35)) {
+//					if(type == 1 && edge.getSrc() < edge.getDest()) {
+//						//System.out.println(String.format("Found the pokemon on edge from %d to %d on coordinates (%f,%f) ", edge.getSrc(), edge.getDest(), (float) pokemon_geo.x(), (float) pokemon_geo.y()));
+//
+////						int id = (int)(pokemon.get("type").getAsInt() * pokemon.get("value").getAsInt() * (pokemon_x - pokemon_y)*1000000);
+//						pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble(),id);
+//						pokemon_Edges.add(pokemonEdge);
+//						graph.getEdge()
+//					}
+//					else if(type == -1 && edge.getSrc() > edge.getDest()){
+//						//System.out.println(String.format("Found the pokemon on edge from %d to %d on coordinates (%f,%f) ", edge.getSrc(), edge.getDest(), (float) pokemon_geo.x(), (float) pokemon_geo.y()));
+//						int id = (int)(pokemon.get("type").getAsInt() * pokemon.get("value").getAsInt() * (pokemon_x - pokemon_y)*1000000);
+//						pokemonEdge = new PokemonEdge(edge.getSrc(),edge.getDest(),pokemon.get("value").getAsDouble(),id);
+//						pokemon_Edges.add(pokemonEdge);
+//					}
+					edge_data edgeData;
+					if(type==-1){
+						edgeData = new EdgeData(edge.getSrc(),edge.getDest(),edge.getWeight());
+					}
+					else{
+						edgeData = new EdgeData(edge.getDest(),edge.getSrc(),edge.getWeight());
+					}
+
+					return edgeData;
+				}
+			}
+		}
+		return null;
+
+	}
+
+
 	public static void updateEdge(CL_Pokemon fr, directed_weighted_graph g) {
 		//	oop_edge_data ans = null;
 		Iterator<node_data> itr = g.getV().iterator();
