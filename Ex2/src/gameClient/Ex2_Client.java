@@ -24,7 +24,7 @@ public class Ex2_Client implements Runnable{
 	private static HashMap<Integer, Integer> PokemonToAgent = new HashMap<>();
 	private static HashMap<Integer, List<node_data>> AgentToPath = new HashMap<>();
 	private static HashMap<Integer, Integer> LastOne = new HashMap<>();
-
+	public static HashMap<Integer, EdgeValue> AgentToPok = new HashMap<>();
 	private static PriorityQueue<AgentEdgeDist> agentEdgeDistQ = new PriorityQueue<>();
 
 	public static void main(String[] a) {
@@ -140,6 +140,7 @@ public class Ex2_Client implements Runnable{
 			if(agent.getNextNode()==-1) {
 				int dest = nextNode(gg, agent, edge);
 				int id = agent.getID();
+				AgentToPok.put(agent.getID(),edge);
 				game.chooseNextEdge(id, dest);
 				System.out.println("Agent: " + agent.getID() + ", val: " + agent.getValue() + " turned to node: " + dest);
 			}
