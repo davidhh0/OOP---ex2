@@ -99,7 +99,7 @@ public class Ex2_Client implements Runnable{
 			if(dest==-1) {
 				dest = nextNode(gg, src, pokemonsList, id);
 				game.chooseNextEdge(ag.getID(), dest);
-				System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+				//System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
 			}
 		}
 	}
