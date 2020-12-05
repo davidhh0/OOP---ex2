@@ -3,13 +3,20 @@ package api;
 public class GeoLocation implements geo_location {
     double x,y,z;
 
-    public GeoLocation(double _x, double _y, double _z){
+    public GeoLocation(double _x, double _y){
         this.y = _y;
         this.x = _x;
-        this.z = _z;
+        this.z =0;
+    }
+    public GeoLocation(double _x, double _y,double _z){
+        this.y = _y;
+        this.x = _x;
+        this.z =_z;
     }
 
-    @Override
+
+
+        @Override
     public double x() {
         return x;
     }
@@ -28,9 +35,9 @@ public class GeoLocation implements geo_location {
     public double distance(geo_location g) {
         double X = x-g.x();
         double Y = y-g.y();
-        double Z = z-g.z();
-        X = X*X ; Y = Y*Y ; Z = Z*Z;
-        return Math.sqrt((X+Y+Z));
+       // double Z = z-g.z();
+        X = X*X ; Y = Y*Y ;// Z = Z*Z;
+        return Math.sqrt((X+Y));
     }
     @Override
     public String toString(){

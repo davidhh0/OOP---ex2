@@ -1,9 +1,6 @@
 package gameClient;
 
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.geo_location;
-import api.node_data;
+import api.*;
 import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
@@ -15,6 +12,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -26,7 +24,7 @@ import javax.swing.JOptionPane;
  * that the code is not well written in order to force you improve the
  * code and not to take it "as is".
  */
-public class MyFrame extends JFrame {
+public class MyFrame extends JFrame implements MouseListener, MouseMotionListener, ActionListener {
 	private int _ind;
 	private Arena _ar;
 	private gameClient.util.Range2Range _w2f;
@@ -35,6 +33,11 @@ public class MyFrame extends JFrame {
 	private int _win_h = 1000;
 	private int _win_w = 600;
 	private JFrame frame;
+	private HashMap<edge_data,Boolean> wasDrawn;
+	private int nRadius = 6;
+	private boolean _moving_point;
+	private node_data _pivot_node;
+	private double EPS = 0.0010;
 
 	MyFrame(String a) {
 		super(a);
@@ -48,11 +51,14 @@ public class MyFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setTitle("Ex2 - OOP");
 		frame = this;
+		wasDrawn = new HashMap<>();
 		MenuBar menu_bar = new MenuBar();
 		Menu menu = new Menu("File");
 		Menu data = new Menu("Data");
 		menu_bar.add(menu);
 		menu_bar.add(data);
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 		this.setMenuBar(menu_bar);
 		MenuItem file_save_photo = new MenuItem("Save photo");
 		MenuItem file_close = new MenuItem("Close");
@@ -66,7 +72,7 @@ public class MyFrame extends JFrame {
 				try { //saves the image
 					// retrieve image
 					String nameOfPhoto = JOptionPane.showInputDialog("Enter a photo name: ");
-					nameOfPhoto = nameOfPhoto;
+					//nameOfPhoto = nameOfPhoto;
 					boolean isNull = nameOfPhoto == null;
 					if (!isNull) {
 						nameOfPhoto = nameOfPhoto + ".png";
@@ -144,14 +150,6 @@ public class MyFrame extends JFrame {
 
 	}
 
-	private static Image createImage() {
-		BufferedImage img = null;
-		try {
-			img = ImageIO.read(new File("oneImg.png"));
-		} catch (IOException e) {
-		}
-		return img;
-	}
 
 	private static BufferedImage getScreenShot(Component component) throws AWTException {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -184,11 +182,11 @@ public class MyFrame extends JFrame {
 		int h = this.getHeight();
 		//g.clearRect(0, 0, w, h);
 		//	updateFrame();
-		drawPokemons(_buffer_graphics);
-		drawGraph(_buffer_graphics);
-		drawAgants(_buffer_graphics);
 		drawInfo(_buffer_graphics);
+		drawGraph(_buffer_graphics);
 
+		drawAgants(_buffer_graphics);
+		drawPokemons(_buffer_graphics);
 		g.drawImage(_buffer_img, 0, 0, this);
 
 	}
@@ -208,19 +206,22 @@ public class MyFrame extends JFrame {
 		Iterator<node_data> iter = gg.getV().iterator();
 		while (iter.hasNext()) {
 			node_data n = iter.next();
-			g.setColor(Color.blue);
-			drawNode(n, 6, g);
 			Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
 			while (itr.hasNext()) {
 				edge_data e = itr.next();
 				g.setColor(Color.gray);
 				drawEdge(e, g);
+				wasDrawn.put(e,true);
 			}
+			g.setColor(Color.blue);
+			drawNode(n, nRadius, g);
 		}
 	}
 
 	private void drawPokemons(Graphics g) {
 		List<CL_Pokemon> fs = _ar.getPokemons();
+		int totalPokemons = fs.size();
+		int count =0;
 		if (fs != null) {
 			Iterator<CL_Pokemon> itr = fs.iterator();
 
@@ -236,11 +237,22 @@ public class MyFrame extends JFrame {
 				if (c != null) {
 
 					geo_location fp = this._w2f.world2frame(c);
-					g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+					//g.fillOval(, 2 * r, 2 * r);
+					try {
+						int rand = (int)((Math.random())*9)+1;
+						String toRead = count%totalPokemons + ".png";
+						BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", toRead));
+						g.drawImage(image,(int) fp.x() - r, (int) fp.y() - r,null);
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 					//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
 
-				}
+				}count++;
 			}
+
 		}
 	}
 
@@ -251,6 +263,9 @@ public class MyFrame extends JFrame {
 		int i = 0;
 		while (rs != null && i < rs.size()) {
 			geo_location c = rs.get(i).getLocation();
+			edge_data p = rs.get(i).get_curr_edge();
+
+
 			int r = 8;
 			i++;
 			if (c != null) {
@@ -277,6 +292,78 @@ public class MyFrame extends JFrame {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setStroke(new BasicStroke(2.5F));
 		g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
+
 		//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		System.out.println("X: "+ e.getX() + "Y: " + e.getY());
+		int x = e.getX();
+		int y = e.getY();
+		geo_location location = new GeoLocation(x,y);
+		System.out.println((int)(_ar.getGraph().getNode(12).getLocation().x()*100000)-3500000);
+		System.out.println((int)(_ar.getGraph().getNode(11).getLocation().x()*100000)-3500000);
+
+
+
+//		int x = e.getX();
+//		int y = e.getY();
+//		geo_location location = new GeoLocation(x,y);
+//		node_data temp = new NodeData(-1);
+//		temp.setLocation(location);
+//		float min_dist = (int) (nRadius*1.1);
+//		double best_dist = Float.POSITIVE_INFINITY;
+//		for(node_data run : _ar.getGraph().getV()){
+//			double dist =temp.getLocation().distance(run.getLocation());
+//			if(dist<min_dist && dist<best_dist){
+//				_pivot_node = run;
+//				best_dist = dist;
+//				_moving_point = true;
+//
+//			}
+//
+//
+//		}
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if(_moving_point){
+			geo_location location = new GeoLocation(e.getX(),e.getY());
+			_pivot_node.setLocation(location);
+			repaint();
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+
 	}
 }
