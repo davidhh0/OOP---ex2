@@ -9,12 +9,16 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.JOptionPane;
 
 
@@ -35,9 +39,14 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 	private JFrame frame;
 	private HashMap<edge_data,Boolean> wasDrawn;
 	private int nRadius = 6;
-	private boolean _moving_point;
-	private node_data _pivot_node;
-	private double EPS = 0.0010;
+
+	private double EPS = 4.0;
+
+	//private HashMap<CL_Pokemon,Integer> pokemonToIcon;
+	BufferedImage image;
+
+
+
 
 	MyFrame(String a) {
 		super(a);
@@ -46,11 +55,12 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 	}
 
 	public void init() {
-
 		this.setSize(_win_h, _win_w);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setTitle("Ex2 - OOP");
 		frame = this;
+
+
 		wasDrawn = new HashMap<>();
 		MenuBar menu_bar = new MenuBar();
 		Menu menu = new Menu("File");
@@ -104,7 +114,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 				if (i == 0) {
 					Thread client = new Thread(new Ex2_Client());
 					client.start();
-//					Ex2_Client.stop();
+					//Ex2_Client.stop();
 					//init();
 				}
 			}
@@ -128,9 +138,14 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 				int newHeight = e.getComponent().getHeight();
 				int newWidth = e.getComponent().getWidth();
 				if (frame.isActive()) {
-					frame.getContentPane().setPreferredSize(new Dimension(newWidth, newHeight));
-					pack();
-					updateFrame();
+					try {
+						frame.getContentPane().setPreferredSize(new Dimension(newWidth, newHeight));
+						pack();
+						updateFrame();
+					}
+					catch (Exception b){
+						b.printStackTrace();
+					}
 				}
 
 			}
@@ -175,8 +190,17 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 	}
 
 	public void paint(Graphics g) {
+
 		_buffer_img = createImage(this.getWidth(), this.getHeight());
 		_buffer_graphics = _buffer_img.getGraphics();
+		try {
+			frame.getSize();
+			BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "back.png"));
+			_buffer_graphics.drawImage(image,0,0,null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -209,7 +233,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 			Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
 			while (itr.hasNext()) {
 				edge_data e = itr.next();
-				g.setColor(Color.gray);
+				g.setColor(Color.white);
 				drawEdge(e, g);
 				wasDrawn.put(e,true);
 			}
@@ -221,6 +245,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 	private void drawPokemons(Graphics g) {
 		List<CL_Pokemon> fs = _ar.getPokemons();
 		int totalPokemons = fs.size();
+
 		int count =0;
 		if (fs != null) {
 			Iterator<CL_Pokemon> itr = fs.iterator();
@@ -228,6 +253,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 			while (itr.hasNext()) {
 
 				CL_Pokemon f = itr.next();
+
 				Point3D c = f.getLocation();
 				int r = 10;
 				g.setColor(Color.green);
@@ -239,10 +265,24 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 					geo_location fp = this._w2f.world2frame(c);
 					//g.fillOval(, 2 * r, 2 * r);
 					try {
-						int rand = (int)((Math.random())*9)+1;
-						String toRead = count%totalPokemons + ".png";
+						String toRead;
+						if(f.getValue()<6) {
+							toRead = "2.png";
+						}
+						else if (f.getValue()<9){
+							toRead = "3.png";
+						}
+						else if(f.getValue()<10) {
+							toRead = "4.png";
+						}
+						else if(f.getValue()<13){
+							toRead = "5.png";
+						}
+						else
+							toRead = "1.png";
 						BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", toRead));
 						g.drawImage(image,(int) fp.x() - r, (int) fp.y() - r,null);
+
 
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -263,15 +303,26 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 		int i = 0;
 		while (rs != null && i < rs.size()) {
 			geo_location c = rs.get(i).getLocation();
-			edge_data p = rs.get(i).get_curr_edge();
-
-
+			//edge_data p = rs.get(i).get_curr_edge();
+            int id = rs.get(i).getID();
+			int speed = (int) rs.get(i).getSpeed();
+			String toRead = "p"+speed + ".png";
 			int r = 8;
 			i++;
 			if (c != null) {
 
-				geo_location fp = this._w2f.world2frame(c);
-				g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+				try {
+					BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", toRead));
+					geo_location fp = this._w2f.world2frame(c);
+
+					g.drawImage(image,(int) fp.x() - r, (int) fp.y() - r,null);
+					g.drawString(""+id,(int) fp.x() - r, (int) fp.y() - r);
+					//g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+
 			}
 		}
 	}
@@ -280,7 +331,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 		geo_location pos = n.getLocation();
 		geo_location fp = this._w2f.world2frame(pos);
 		g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-		g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 4 * r);
+		g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 2 * r);
 	}
 
 	private void drawEdge(edge_data e, Graphics g) {
@@ -298,40 +349,30 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+	    for(CL_Pokemon run : _ar.getPokemons()){
+            geo_location pos = run.getLocation();
+            geo_location fp = this._w2f.world2frame(pos);
+            geo_location fromE = new GeoLocation(e.getX(),e.getY());
+            double distance = fp.distance(fromE);
+            if(distance < EPS)
+                System.out.println("Pokemon id: "+  run.get_id() + "Pokemon value"+run.getValue()
+                +"Pokemon ");
 
+
+
+
+        }
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println("X: "+ e.getX() + "Y: " + e.getY());
-		int x = e.getX();
-		int y = e.getY();
-		geo_location location = new GeoLocation(x,y);
-		System.out.println((int)(_ar.getGraph().getNode(12).getLocation().x()*100000)-3500000);
-		System.out.println((int)(_ar.getGraph().getNode(11).getLocation().x()*100000)-3500000);
 
 
 
-//		int x = e.getX();
-//		int y = e.getY();
-//		geo_location location = new GeoLocation(x,y);
-//		node_data temp = new NodeData(-1);
-//		temp.setLocation(location);
-//		float min_dist = (int) (nRadius*1.1);
-//		double best_dist = Float.POSITIVE_INFINITY;
-//		for(node_data run : _ar.getGraph().getV()){
-//			double dist =temp.getLocation().distance(run.getLocation());
-//			if(dist<min_dist && dist<best_dist){
-//				_pivot_node = run;
-//				best_dist = dist;
-//				_moving_point = true;
-//
-//			}
-//
-//
-//		}
+        }
 
-	}
+
+
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
@@ -355,15 +396,12 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(_moving_point){
-			geo_location location = new GeoLocation(e.getX(),e.getY());
-			_pivot_node.setLocation(location);
-			repaint();
-		}
+
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 
 	}
+
 }
