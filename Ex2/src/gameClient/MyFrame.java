@@ -104,7 +104,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 				if (i == 0) {
 					Thread client = new Thread(new Ex2_Client());
 					client.start();
-					Ex2_Client.stop();
+//					Ex2_Client.stop();
 					//init();
 				}
 			}
