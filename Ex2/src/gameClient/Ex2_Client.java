@@ -2,12 +2,16 @@ package gameClient;
 
 import Server.Game_Server_Ex2;
 import api.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import gameClient.util.AgentEdgeDist;
 import gameClient.util.EdgeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 
@@ -48,9 +52,15 @@ public class Ex2_Client implements Runnable {
 
         //isLogged=game.login();
 
-        String g = game.getGraph();
-        String pks = game.getPokemons();
-        directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
+        DWGraph_Algo algo = new DWGraph_Algo();
+        System.out.println(game.toString());
+        Gson gson = new Gson();
+        Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
+        JsonObject gameJsonObject = gson.fromJson(game.toString(), JsonObjectType);
+        String filepath = gameJsonObject.get("GameServer").getAsJsonObject().get("graph").getAsString();
+        algo.load(filepath);
+        directed_weighted_graph gg = algo.getGraph();
+
 
 
         init(game);
@@ -207,7 +217,15 @@ public class Ex2_Client implements Runnable {
         String g = game.getGraph();
 
         String fs = game.getPokemons();
-        directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
+        DWGraph_Algo algo = new DWGraph_Algo();
+        System.out.println(game.toString());
+        Gson gson = new Gson();
+        Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
+        JsonObject gameJsonObject = gson.fromJson(game.toString(), JsonObjectType);
+        String filepath = gameJsonObject.get("GameServer").getAsJsonObject().get("graph").getAsString();
+        algo.load(filepath);
+        directed_weighted_graph gg = algo.getGraph();
+
         //gg.init(g);
         _ar = new Arena();
 
@@ -238,19 +256,41 @@ public class Ex2_Client implements Runnable {
             }
 
             //TODO better start location for agents
-            for (int a = 0; a < rs; a++) {
-                int ind = a % pokemonArrayList.size();
-                CL_Pokemon cl_pokemon = pokemonArrayList.get(ind);
-                int agentStartLoc = cl_pokemon.get_edge().getSrc();
-                if (cl_pokemon.getType() < 0) {
-                    agentStartLoc = cl_pokemon.get_edge().getSrc();
-                }
+            PriorityQueue<EdgeValue> edgesQ = new PriorityQueue<>();
 
-                game.addAgent(agentStartLoc);
+            HashMap<edge_data, Double> edgeMap = new HashMap<>();
+            HashMap<edge_data, Integer> edgeToType = new HashMap<>();
+
+            List<CL_Pokemon> pokemonsList = Arena.json2Pokemons(fs,gg);
+
+            for (CL_Pokemon pok : pokemonsList) {
+                if(edgeMap.containsKey(pok.get_edge())){
+                    edgeMap.put(pok.get_edge(),edgeMap.get(pok.get_edge())+pok.getValue());
+                    edgeToType.put(pok.get_edge(),pok.getType());
+                }else{
+                    edgeMap.put(pok.get_edge(),pok.getValue());
+                    edgeToType.put(pok.get_edge(),pok.getType());
+                }
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+            for(Map.Entry<edge_data,Double> entry : edgeMap.entrySet()){
+                EdgeValue edgeValue = new EdgeValue(entry.getValue(), entry.getKey(), edgeToType.get(entry.getKey()));
+                edgesQ.offer(edgeValue);
+            }
+
+
+            for(int a = 0;a<rs;a++) {
+                EdgeValue edgeValue = edgesQ.poll();
+                if(edgeValue.get_type()<0){
+                    game.addAgent(edgeValue.get_edge().getSrc());
+                }
+                else{
+                    game.addAgent(edgeValue.get_edge().getDest());
+                }
+            }
         }
+        catch (JSONException e) {e.printStackTrace();}
+
         arrayList.add(game.getAgents());
         arrayList.add(game.getGraph());
         arrayList.add(game.getPokemons());
