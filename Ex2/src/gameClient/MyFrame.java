@@ -51,7 +51,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
     public void init() {
         this.setSize(_win_h, _win_w);
-        this.setBackground(Color.WHITE);
+        this.setBackground(Color.BLACK);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setTitle("Ex2 - OOP");
         frame = this;
@@ -230,12 +230,12 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
         _buffer_graphics.setFont(new Font("Times New Roman", Font.BOLD, (this.getWidth() * this.getHeight()) / 50000));
 
-        try {
-            BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "true (2).png"));
-            _buffer_graphics.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "true (2).png"));
+//            _buffer_graphics.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), this);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         int w = this.getWidth();
         int h = this.getHeight();
@@ -247,7 +247,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
             white_buffer_img = createImage(this.getWidth(), this.getHeight());
             white_buffer_graphics = white_buffer_img.getGraphics();
             white_buffer_graphics.drawImage(image, 0, 0, (int) (this.getWidth() * 0.2), (int) (this.getHeight() * 1), null);
-            drawGraphDetails(white_buffer_graphics);
+            //drawGraphDetails(white_buffer_graphics);
             g.drawImage(white_buffer_img, (int) (w * 0.85), 0, this);
             isResized = false;
         } catch (Exception e) {
@@ -366,7 +366,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
                     g.drawImage(image, (int) fp.x() - r, (int) fp.y() - r, null);
                     g.drawString("" + id, (int) fp.x() - r, (int) fp.y() - r);
                     g.setColor(Color.RED);
-                    g.drawString("Src: " + Ex2_Client.AgentToPok.get(id).get_edge().getDest() + " Dest: " + Ex2_Client.AgentToPok.get(id).get_edge().getSrc(), (int) fp.x() - 2 * r, (int) fp.y() - 2 * r);
+                    //g.drawString("Src: " + Ex2_Client.AgentToPok.get(id).get_edge().getDest() + " Dest: " + Ex2_Client.AgentToPok.get(id).get_edge().getSrc(), (int) fp.x() - 2 * r, (int) fp.y() - 2 * r);
                     //g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -15,7 +15,7 @@ import java.util.*;
 public class BreakTheGraph {
     directed_weighted_graph theGraph;
     HashMap<Integer, ArrayList<node_data>> rangeToNode;
-    ArrayList<directed_weighted_graph> graphs;
+    public static ArrayList<directed_weighted_graph> graphs;
     ArrayList<numRange> ranges;
     int numOfNodes = 0;
     int numOfAgents = 0;
@@ -70,6 +70,9 @@ public class BreakTheGraph {
                         graphs.get(i).addNode(theGraph.getNode(run.getSrc()));
                         graphs.get(i).addNode(theGraph.getNode(run.getDest()));
                         graphs.get(i).connect(run.getSrc(), run.getDest(), run.getWeight());
+                        if(theGraph.getEdge(run.getDest(),run.getSrc())!=null){
+                            graphs.get(i).connect(run.getDest(), run.getSrc(), run.getWeight());
+                        }
                     }
                 }
             }
