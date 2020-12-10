@@ -20,6 +20,7 @@ public class Ex2_Client implements Runnable {
     public static HashMap<Integer, EdgeValue> AgentToPok = new HashMap<>();
     private static PriorityQueue<AgentEdgeDist> agentEdgeDistQ = new PriorityQueue<>();
     private static HashMap<Integer, directed_weighted_graph> agentToGraph;
+    public static boolean isLogged=false;
 
     public static void main(String[] a) {
         Thread client = new Thread(new Ex2_Client());
@@ -44,6 +45,9 @@ public class Ex2_Client implements Runnable {
         game_service game = Game_Server_Ex2.getServer(choice); // you have [0,23] games
 //	 	int id = 206320863;
 //		game.login(id);
+
+        //isLogged=game.login();
+
         String g = game.getGraph();
         String pks = game.getPokemons();
         directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
@@ -51,6 +55,9 @@ public class Ex2_Client implements Runnable {
 
         init(game);
         _numberOfAgents = game.getAgents().split("id").length - 1;
+
+        new BreakTheGraph(gg,gg.getV().size(),_numberOfAgents);
+
         game.startGame();
         //_win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + game.toString());
 
@@ -281,7 +288,7 @@ public class Ex2_Client implements Runnable {
                     arrayList.add(game.getPokemons());
                     ar.set_info(arrayList);
                     try{
-                        Thread.sleep(500);
+                        Thread.sleep(300);
                     } catch(Exception e) {}
                 }
             }

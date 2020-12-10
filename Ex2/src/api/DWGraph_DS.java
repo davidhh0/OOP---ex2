@@ -17,6 +17,7 @@ public class DWGraph_DS implements directed_weighted_graph {
         edges = new HashMap<>();
         vertices = new HashMap<>();
         inComing = new HashMap<>();
+
     }
     @Override
     public boolean equals(Object g1) {
