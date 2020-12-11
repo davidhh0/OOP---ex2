@@ -66,8 +66,8 @@ public class Ex2_Client implements Runnable {
         init(game);
         _numberOfAgents = game.getAgents().split("id").length - 1;
 
-        new BreakTheGraph(gg,gg.getV().size(),_numberOfAgents);
-
+        ArrayList<directed_weighted_graph> a = new BreakTheGraph(gg,gg.getV().size(),_numberOfAgents).graphs;
+        System.out.println();
         game.startGame();
         //_win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + game.toString());
 
