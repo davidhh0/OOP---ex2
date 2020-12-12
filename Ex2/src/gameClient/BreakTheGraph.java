@@ -20,6 +20,7 @@ public class BreakTheGraph {
     int numOfNodes = 0;
     int numOfAgents = 0;
     int rangePerAgent = 0;
+    double mostLeft;
 
     public BreakTheGraph(directed_weighted_graph graph, int nodes, int agents) {
         this.theGraph = graph;
@@ -28,7 +29,7 @@ public class BreakTheGraph {
         numOfAgents = agents;
         ranges = new ArrayList<>();
         graphs = new ArrayList<>();
-        rangePerAgent = 1000 / numOfAgents;
+        rangePerAgent = (int)(getRange(graph) / numOfAgents);
         for (int i = 0; i < numOfAgents; i++) {
             rangeToNode.put(i, new ArrayList<>());
             graphs.add(new DWGraph_DS());
@@ -38,7 +39,26 @@ public class BreakTheGraph {
         groupByEdges();
     }
 
+    private double getRange(directed_weighted_graph graph){
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
 
+        for(node_data node:graph.getV()){
+            geo_location pos = node.getLocation();
+            geo_location real = MyFrame.realLocation(pos);
+
+            if(real.x()<min){
+                min=real.x();
+                mostLeft=real.x();
+            }
+            if(real.x()>max){
+                max=real.x();
+            }
+
+
+        }
+        return (max-min);
+    }
     /**
      * Divide the graph into (numOfAgents) parts. Each part contains (numOfNodes/numOfAgents) nodes.
      * Each part is connected.
@@ -84,9 +104,9 @@ public class BreakTheGraph {
 
 
     public void getRange() {
-        int start = 0, end = rangePerAgent;
+        double start = mostLeft, end = mostLeft+rangePerAgent;
         for (int i = 0; i < numOfAgents; i++) {
-            ranges.add(new numRange(start, end));
+            ranges.add(new numRange((int)start, (int)end));
             start += rangePerAgent;
             end += rangePerAgent;
         }

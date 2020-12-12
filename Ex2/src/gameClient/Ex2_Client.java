@@ -72,8 +72,8 @@ public class Ex2_Client implements Runnable {
         PriorityQueue<directed_weighted_graph> graphsQ = new PriorityQueue<>(new Comparator<directed_weighted_graph>() {
             @Override
             public int compare(directed_weighted_graph o1, directed_weighted_graph o2) {
-                if(o1.nodeSize()>o2.nodeSize()) return -1;
-                if(o1.nodeSize()<o2.nodeSize()) return 1;
+                if(o1.nodeSize()>o2.nodeSize()) return 1;
+                if(o1.nodeSize()<o2.nodeSize()) return -1;
                 return 0;
             }
         });
@@ -87,6 +87,7 @@ public class Ex2_Client implements Runnable {
                 directed_weighted_graph g1 = graphsQ.poll();
                 new BreakTheGraph(g1,g1.getV().size(),1);
                 _numberOfAgents--;
+                graphs.addAll(BreakTheGraph.graphs);
             }
             directed_weighted_graph g = graphsQ.poll();
             new BreakTheGraph(g,g.getV().size(),_numberOfAgents);
