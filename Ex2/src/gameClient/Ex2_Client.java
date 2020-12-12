@@ -175,10 +175,31 @@ public class Ex2_Client implements Runnable {
                 edgeToType.put(pok.get_edge(), pok.getType());
             }
         }
+
         //Adding edge to the queue
         for (Map.Entry<edge_data, Double> entry : edgeMap.entrySet()) {
-            EdgeValue edgeValue = new EdgeValue(entry.getValue(), entry.getKey(), edgeToType.get(entry.getKey()));
-            edgesQ.offer(edgeValue);
+            CL_Agent agent = getAgent(agentID, lg, _ar.getGraph());
+            DWGraph_Algo algo = new DWGraph_Algo();
+            algo.init(gg);
+            edge_data edge = entry.getKey();
+            if(edge!=null) {
+                double pathDist = (algo.shortestPathDist(agent.getSrcNode(), entry.getKey().getSrc()))/(agent.getSpeed());
+                List<node_data> path = algo.shortestPath(agent.getSrcNode(), entry.getKey().getSrc());
+                //1-entry
+                //bigger value min dist -> value* 1/(dist[0;infinity]*10)
+                if(pathDist>=0 && path.size()>0) {
+                    if (pathDist != 0) {
+
+                        EdgeValue edgeValue = new EdgeValue(entry.getValue() * (1 / (pathDist * 10)), entry.getKey(), edgeToType.get(entry.getKey()));
+                        edgesQ.offer(edgeValue);
+                    } else {
+                        EdgeValue edgeValue = new EdgeValue(entry.getValue(), entry.getKey(), edgeToType.get(entry.getKey()));
+                        edgesQ.offer(edgeValue);
+                    }
+                }
+            }
+//            EdgeValue edgeValue = new EdgeValue(entry.getValue(), entry.getKey(), edgeToType.get(entry.getKey()));
+//            edgesQ.offer(edgeValue);
         }
         //Setting type for EdgeValue
 
@@ -252,26 +273,25 @@ public class Ex2_Client implements Runnable {
 
         if (edgeValue.get_type() > 0) {
             if (agent.getSrcNode() == edgeValue.get_edge().getSrc()) {
-                System.out.println("David HOMO");
                 return edgeValue.get_edge().getDest();
 
             }
 
             List<node_data> path = algo.shortestPath(agent.getSrcNode(), edgeValue.get_edge().getSrc());
             if(path.size()<1){
-                System.out.println("-1");
+
                 return -1;
             }
             return path.get(1).getKey();
         } else {
             if (agent.getSrcNode() == edgeValue.get_edge().getDest()) {
-                System.out.println("David HOMO");
+
                 return edgeValue.get_edge().getSrc();
             }
 
             List<node_data> path = algo.shortestPath(agent.getSrcNode(), edgeValue.get_edge().getDest());
             if(path.size()<1){
-                System.out.println("-1");
+
                 return -1;
             }
             return path.get(1).getKey();

@@ -143,18 +143,9 @@ public class Arena {
 				//Type 1 = from big to small
 				//Type -1 = from small to big
 
-				if (Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) - location1.distance(location2)) < Math.exp(-35)) {
+				if (Math.abs(location1.distance(pokemon_geo) + pokemon_geo.distance(location2) - location1.distance(location2)) < Math.exp(-25)) {
 
-					edge_data edgeData;
 					return edge;
-//					if(type==-1){
-//						edgeData = new EdgeData(edge.getSrc(),edge.getDest(),edge.getWeight());
-//					}
-//					else{
-//						edgeData = new EdgeData(edge.getDest(),edge.getSrc(),edge.getWeight());
-//					}
-//
-//					return edgeData;
 				}
 			}
 		}

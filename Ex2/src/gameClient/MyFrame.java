@@ -172,7 +172,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         g.setFont(new Font("Times New Roman", Font.PLAIN, width / 100));
         g.setColor(Color.white);
 
-        if (_ar.get_info().size() > 0) {
+        if (_ar.get_info().get(0).split(",").length > 1) {
             ArrayList<CL_Agent> agentArray = (ArrayList<CL_Agent>) Arena.getAgents(_ar.get_info().get(0), _ar.getGraph());
             for (CL_Agent run : agentArray) {
                 agentString = "id: " + run.getID() + ", speed: " + run.getSpeed() + ", value: " + run.getValue();
@@ -192,7 +192,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
 
         g.drawString("Arena Details", 12, 65);
-        g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 10) + "ms", 12, 70 + 15);
+        g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 1000) + "s", 12, 70 + 15);
         g.drawString("Number of Agents: " + Ex2_Client._numberOfAgents, 12, 70 + 30);
         g.drawString("Number of Pokemons: "+_ar.getPokemons().size(),12,70+45);
         g.drawString("Logged in id: "+(Ex2_Client.isLogged?"number":"null"),12,70+60);
@@ -247,7 +247,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
             white_buffer_img = createImage(this.getWidth(), this.getHeight());
             white_buffer_graphics = white_buffer_img.getGraphics();
             white_buffer_graphics.drawImage(image, 0, 0, (int) (this.getWidth() * 0.2), (int) (this.getHeight() * 1), null);
-            //drawGraphDetails(white_buffer_graphics);
+            drawGraphDetails(white_buffer_graphics);
             g.drawImage(white_buffer_img, (int) (w * 0.85), 0, this);
             isResized = false;
         } catch (Exception e) {
