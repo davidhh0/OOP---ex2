@@ -73,7 +73,6 @@ public class DWGraph_DS implements directed_weighted_graph {
     @Override
     public edge_data getEdge(int src, int dest) {
         if(edges.get(src).get(dest) == null) {
-            System.err.println("Error in getEdge - there isn't such an edge");
             return null;
         }
         return edges.get(src).get(dest);
@@ -210,7 +209,6 @@ public class DWGraph_DS implements directed_weighted_graph {
             ModeCount++;
             return edgeToRemove;
         }
-        System.err.println("Error in removeEdge - there isn't such an edge");
         return null;
     }
 
