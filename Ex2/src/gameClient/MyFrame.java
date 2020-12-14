@@ -243,7 +243,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
         //if (isResized) {
         try {
-            BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "brick.jpg"));
+            BufferedImage image = ImageIO.read(new File("Pokemon icons", "brick.jpg"));
             white_buffer_img = createImage(this.getWidth(), this.getHeight());
             white_buffer_graphics = white_buffer_img.getGraphics();
             white_buffer_graphics.drawImage(image, 0, 0, (int) (this.getWidth() * 0.2), (int) (this.getHeight() * 1), null);
@@ -329,7 +329,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
                             toRead = "5.png";
                         } else
                             toRead = "1.png";
-                        BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", toRead));
+                        BufferedImage image = ImageIO.read(new File("Pokemon icons", toRead));
                         g.drawImage(image, (int) fp.x() - r, (int) fp.y() - r, null);
 
 
@@ -360,7 +360,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
             if (c != null) {
 
                 try {
-                    BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", toRead));
+                    BufferedImage image = ImageIO.read(new File("Pokemon icons", toRead));
                     geo_location fp = this._w2f.world2frame(c);
 
                     g.drawImage(image, (int) fp.x() - r, (int) fp.y() - r, null);

@@ -27,28 +27,37 @@ public class Ex2_Client implements Runnable {
     private static HashMap<Integer, directed_weighted_graph> agentToGraph;
     public static boolean isLogged=false;
     private static ArrayList<directed_weighted_graph> graphs = new ArrayList<>();
+    private static int TzNumber=-1;
+    private static int Senario=-1;
+    public static void main(String[] args) {
+        if(args.length>1){
+            TzNumber = Integer.parseInt(args[0]);
+            Senario = Integer.parseInt(args[1]);
+        }
 
-    public static void main(String[] a) {
         Thread client = new Thread(new Ex2_Client());
         client.start();
+
     }
 
     @Override
     public void run() {
-        int choice=0;
-        DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel<Integer>();
-        for(int i=0;i<=23;i++) comboBoxModel.addElement(i);
-        JComboBox cb = new JComboBox(comboBoxModel);
-        int result = JOptionPane.showConfirmDialog(null, cb, "Select a scenario number", JOptionPane.OK_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            choice = (int) cb.getSelectedItem();
+        if(Senario<0) {
+            DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel<Integer>();
+            for (int i = 0; i <= 23; i++) comboBoxModel.addElement(i);
+            JComboBox cb = new JComboBox(comboBoxModel);
+            int result = JOptionPane.showConfirmDialog(null, cb, "Select a scenario number", JOptionPane.OK_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                Senario = (int) cb.getSelectedItem();
+            } else
+                System.exit(0);
         }
-        else
-            System.exit(0);
 
 
-        int scenario_num = 11;
-        game_service game = Game_Server_Ex2.getServer(choice); // you have [0,23] games
+        game_service game = Game_Server_Ex2.getServer(Senario); // you have [0,23] games
+        if(TzNumber>0){
+            isLogged=game.login(TzNumber);
+        }
 //	 	int id = 206320863;
 //		game.login(id);
 
