@@ -12,12 +12,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Type;
 import java.util.*;
 
 
 public class Ex2_Client implements Runnable {
     private static MyFrame _win;
+    private static EnteringFrame _enterWin;
     private static Arena _ar;
     public static int _numberOfAgents;
     public static long timeToEnd = 0;
@@ -29,6 +32,7 @@ public class Ex2_Client implements Runnable {
     private static ArrayList<directed_weighted_graph> graphs = new ArrayList<>();
     private static int TzNumber=-1;
     private static int Senario=-1;
+    private static Object lock = new Object();
     public static void main(String[] args) {
         if(args.length>1){
             TzNumber = Integer.parseInt(args[0]);
@@ -42,15 +46,47 @@ public class Ex2_Client implements Runnable {
 
     @Override
     public void run() {
-        if(Senario<0) {
-            DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel<Integer>();
-            for (int i = 0; i <= 23; i++) comboBoxModel.addElement(i);
-            JComboBox cb = new JComboBox(comboBoxModel);
-            int result = JOptionPane.showConfirmDialog(null, cb, "Select a scenario number", JOptionPane.OK_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                Senario = (int) cb.getSelectedItem();
-            } else
-                System.exit(0);
+//        if(Senario<0) {
+//            DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel<Integer>();
+//            for (int i = 0; i <= 23; i++) comboBoxModel.addElement(i);
+//            JComboBox cb = new JComboBox(comboBoxModel);
+//            int result = JOptionPane.showConfirmDialog(null, cb, "Select a scenario number", JOptionPane.OK_OPTION);
+//            if (result == JOptionPane.OK_OPTION) {
+//                Senario = (int) cb.getSelectedItem();
+//            } else
+//                System.exit(0);
+//        }
+        _enterWin = new EnteringFrame("Enter Ex2");
+        _enterWin.show();
+        Thread t = new Thread() {
+            public void run() {
+                synchronized(lock) {
+                    while (_enterWin.isVisible())
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                }
+            }
+        };
+        t.start();
+        _enterWin.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent arg0) {
+                synchronized (lock) {
+                    _enterWin.setVisible(false);
+                    System.out.println("Closed");
+                    lock.notifyAll();
+                }
+            }
+
+        });
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
 

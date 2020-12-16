@@ -42,6 +42,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
     private HashMap<edge_data, Boolean> wasDrawn;
     private int nRadius = 6;
     private int _numberOfAgents = 1;
+    private static BufferedImage imageWallpaper ;
 
 
     MyFrame(String a) {
@@ -55,8 +56,11 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setTitle("Ex2 - OOP");
         frame = this;
-
-
+        try {
+            imageWallpaper = ImageIO.read(new File("Ex2/Pokemon icons", "Wallpaper3.png"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         wasDrawn = new HashMap<>();
         MenuBar menu_bar = new MenuBar();
         Menu menu = new Menu("File");
@@ -170,28 +174,44 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         int i = 0;
         int sum=0;
         g.setFont(new Font("Times New Roman", Font.PLAIN, width / 100));
-        g.setColor(Color.white);
 
+        ArrayList<String> agentStrings = new ArrayList<>();
+//        g.setColor(Color.white);
         if (_ar.get_info().get(0).split(",").length > 1) {
             ArrayList<CL_Agent> agentArray = (ArrayList<CL_Agent>) Arena.getAgents(_ar.get_info().get(0), _ar.getGraph());
             for (CL_Agent run : agentArray) {
                 agentString = "id: " + run.getID() + ", speed: " + run.getSpeed() + ", value: " + run.getValue();
                 sum+=run.getValue();
-                g.drawString(agentString, 12, 200 + i * 15);
+                agentStrings.add(agentString);
                 i++;
 
             }
         }
+
+        g.setColor(new Color(97,198,207));
+        g.fillRoundRect(5,185,width / 8,  i*20,20,20);
+        g.setColor(new Color(46,103,161));
+        g.drawRoundRect(5, 185 , width / 8, i*20, 20, 20);
+
+        for (int j = 0; j < i; j++) {
+            g.drawString(agentStrings.get(j), 12, 200 + j * 15);
+        }
+        //For Details
+        g.setColor(new Color(97,198,207));
+        g.fillRoundRect(5,70,width / 8, (int) (height / 7.5),20,20);
+        g.setColor(new Color(46,103,161));
+        g.drawRoundRect(5, 70, width / 8, (int) (height / 7.5), 20, 20);
         //g.setColor(Color.black);
 
 
-        g.drawRoundRect(5, 70, width / 8, (int) (height / 7.5), 20, 20);
+//        g.drawRoundRect(5, 70, width / 8, (int) (height / 7.5), 20, 20);
 
         // g.drawRoundRect((int) (width *0.85), height / 5, width / 8, height / 8, 20, 20);
-        g.setFont(new Font("Times New Roman", Font.PLAIN, width / 90));
+        g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90)+8));
 
 
         g.drawString("Arena Details", 12, 65);
+        g.setFont(new Font("Times New Roman", Font.PLAIN, (width / 90)));
         g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 1000) + "s", 12, 70 + 15);
         g.drawString("Number of Agents: " + Ex2_Client._numberOfAgents, 12, 70 + 30);
         g.drawString("Number of Pokemons: "+_ar.getPokemons().size(),12,70+45);
@@ -230,12 +250,10 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
         _buffer_graphics.setFont(new Font("Times New Roman", Font.BOLD, (this.getWidth() * this.getHeight()) / 50000));
 
-//        try {
-//            BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "true (2).png"));
-//            _buffer_graphics.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), this);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
+        _buffer_graphics.drawImage(imageWallpaper, 0, 0, this.getWidth(), this.getHeight(), 0 ,0, (int)(imageWallpaper.getWidth()*0.85), imageWallpaper.getHeight() ,this);
+//            _buffer_graphics.drawImage(image, 0, 0, this.getWidth(), this.getHeight(),this);
+
 
         int w = this.getWidth();
         int h = this.getHeight();
@@ -243,10 +261,10 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
         //if (isResized) {
         try {
-            BufferedImage image = ImageIO.read(new File("Pokemon icons", "brick.jpg"));
-            white_buffer_img = createImage(this.getWidth(), this.getHeight());
+//            BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "Wallpaper3.png"));
+            white_buffer_img = createImage((int) (w * 0.85), this.getHeight());
             white_buffer_graphics = white_buffer_img.getGraphics();
-            white_buffer_graphics.drawImage(image, 0, 0, (int) (this.getWidth() * 0.2), (int) (this.getHeight() * 1), null);
+            white_buffer_graphics.drawImage(imageWallpaper, 0, 0, (int)(imageWallpaper.getWidth()*0.15), this.getHeight(), (int)(imageWallpaper.getWidth()*0.85),0,imageWallpaper.getWidth(),imageWallpaper.getHeight(),null);
             drawGraphDetails(white_buffer_graphics);
             g.drawImage(white_buffer_img, (int) (w * 0.85), 0, this);
             isResized = false;
@@ -264,7 +282,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         drawPokemons(_buffer_graphics);
 
 
-        g.drawImage(_buffer_img, 0, 0, (int) (w * 0.85), h - 10, this);
+        g.drawImage(_buffer_img, 0, 0, (int) (w * 0.85), h, this);
 
 
     }
