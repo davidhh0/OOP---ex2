@@ -74,7 +74,10 @@ public class EnteringFrame extends JFrame {
                     frame.setVisible(false);
                 }
                 else{
-
+                    JOptionPane.showMessageDialog(frame,
+                            "invalid input.",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
