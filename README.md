@@ -1,5 +1,4 @@
-# Welcome to Pokemon Game!
-![enter image description here](https://www.pngfind.com/pngs/m/212-2124794_pokemon-ash-render-hd-png-download.png)
+![enter image description here](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f21a74a1-65e0-4c8b-9b4f-80db3b5bbddb/d4j9r5t-b6e665df-0ef6-4228-8896-9a9b1a0b9932.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvZjIxYTc0YTEtNjVlMC00YzhiLTliNGYtODBkYjNiNWJiZGRiXC9kNGo5cjV0LWI2ZTY2NWRmLTBlZjYtNDIyOC04ODk2LTlhOWIxYTBiOTkzMi5qcGcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.H3fYfKxbmr_xGx-fyLJTJ8mZ_kPMgBfiMgGrmu6Sjiw)
 ## How To Play ?
 
  - Clone the repository to your computer using Git command:
@@ -20,4 +19,3 @@
 		
 
  
-
