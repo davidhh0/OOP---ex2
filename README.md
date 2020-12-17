@@ -7,6 +7,7 @@
  - 2 options for starting the game: 
 	 1. Double click on the jar file and the following screen will pop up:
 		 ![LOG IN](https://i.ibb.co/HHJ0dks/LOGO-300.png)
+		 
 		 The system will wait until the user enters his ID and a scenario number for the game.
 	 3. Using CMD/Terminal in the repository directory with the following command:
 		`java -jar OOP---ex2.jar <id> <scenario>`
