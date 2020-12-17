@@ -57,7 +57,7 @@ public class Ex2_Client implements Runnable {
 //                System.exit(0);
 //        }
         _enterWin = new EnteringFrame("Enter Ex2");
-        _enterWin.show();
+        //_enterWin.show();
         Thread t = new Thread() {
             public void run() {
                 synchronized(lock) {
