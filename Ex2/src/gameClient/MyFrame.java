@@ -217,7 +217,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 1000) + "s", 12, 70 + 15);
         g.drawString("Number of Agents: " + Ex2_Client._numberOfAgents, 12, 70 + 30);
         g.drawString("Number of Pokemons: "+_ar.getPokemons().size(),12,70+45);
-        g.drawString("Logged in id: "+(Ex2_Client.isLogged?"number":"null"),12,70+60);
+        g.drawString("Logged in id: "+(Ex2_Client.isLogged?Ex2_Client.TzNumber:"-1"),12,70+60);
         g.drawString("Total value: "+sum,12,70+75);
         // g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 10) + "ms", (int) (width * 0.85) + 12, height / 4 + 15);
 

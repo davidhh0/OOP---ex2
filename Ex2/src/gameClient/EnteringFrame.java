@@ -66,15 +66,15 @@ public class EnteringFrame extends JFrame {
                 String id = idField.getText();
                 String sce = scenarioField.getText();
                 //PROBLEM
-                if(id.length()!=9 || Integer.parseInt(sce)<0 || Integer.parseInt(sce)>23){
-
-                }
-                else{
+                if((id.length()==9 || Integer.parseInt(id)==-1) &&( Integer.parseInt(sce)>-1 && Integer.parseInt(sce)<24)){
                     int finalID = Integer.parseInt(id);
                     int finalSce = Integer.parseInt(sce);
                     _id = finalID;
                     _sce = finalSce;
                     frame.setVisible(false);
+                }
+                else{
+
                 }
             }
         });
@@ -86,7 +86,6 @@ public class EnteringFrame extends JFrame {
         this.add(scenarioField);
         this.add(scenarioLabel);
         this.add(okButton);
-//        this.setSize(300,300);
         this.setLayout(null);
         this.setResizable(false);
         this.setVisible(true);
@@ -95,22 +94,7 @@ public class EnteringFrame extends JFrame {
 
     }
 
-//    public void paint(Graphics g){
-//        g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
-//        try {
-//            BufferedImage logo  = ImageIO.read(new File("Ex2/Pokemon icons", "Logo.png"));
-//            g.drawImage(logo,0,0,this.getWidth(),this.getHeight()/3,this);
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-////
-////
-////
-//    }
 
-    public static void main(String[]args){
-        EnteringFrame frame = new EnteringFrame("yuval");
-        //frame.repaint();
-    }
+
+
 }

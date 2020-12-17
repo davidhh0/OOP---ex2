@@ -32,7 +32,7 @@ public class Ex2_Client implements Runnable {
     private static HashMap<Integer, directed_weighted_graph> agentToGraph;
     public static boolean isLogged=false;
     private static ArrayList<directed_weighted_graph> graphs = new ArrayList<>();
-    private static int TzNumber=-1;
+    public static int TzNumber=-1;
     private static int Senario=-1;
     private static boolean isArgs = false;
     private static Object lock = new Object();
