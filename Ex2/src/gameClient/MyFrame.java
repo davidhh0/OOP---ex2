@@ -57,7 +57,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         this.setTitle("Ex2 - OOP");
         frame = this;
         try {
-            imageWallpaper = ImageIO.read(new File("Ex2/Pokemon icons", "Wallpaper3.png"));
+            imageWallpaper = ImageIO.read(new File("Pokemon icons", "Wallpaper3.png"));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -198,19 +198,21 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         }
         //For Details
         g.setColor(new Color(97,198,207));
-        g.fillRoundRect(5,70,width / 8, (int) (height / 7.5),20,20);
+        g.fillRoundRect(5,70,width / 8, 80,20,20);
         g.setColor(new Color(46,103,161));
-        g.drawRoundRect(5, 70, width / 8, (int) (height / 7.5), 20, 20);
+        g.drawRoundRect(5, 70, width / 8, 80, 20, 20);
         //g.setColor(Color.black);
 
 
 //        g.drawRoundRect(5, 70, width / 8, (int) (height / 7.5), 20, 20);
 
         // g.drawRoundRect((int) (width *0.85), height / 5, width / 8, height / 8, 20, 20);
+        g.setColor(Color.WHITE);
         g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90)+8));
-
-
         g.drawString("Arena Details", 12, 65);
+        g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90)+5));
+        g.drawString("Agents Details", 12, 180);
+        g.setColor(new Color(46,103,161));
         g.setFont(new Font("Times New Roman", Font.PLAIN, (width / 90)));
         g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 1000) + "s", 12, 70 + 15);
         g.drawString("Number of Agents: " + Ex2_Client._numberOfAgents, 12, 70 + 30);
