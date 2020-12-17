@@ -64,9 +64,9 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         wasDrawn = new HashMap<>();
         MenuBar menu_bar = new MenuBar();
         Menu menu = new Menu("File");
-        Menu data = new Menu("Data");
+        //Menu data = new Menu("Data");
         menu_bar.add(menu);
-        menu_bar.add(data);
+       // menu_bar.add(data);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.setMenuBar(menu_bar);
@@ -159,9 +159,9 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
             }
         });
         menu.add(file_save_photo);
-        menu.add(file_restart);
+       // menu.add(file_restart);
         menu.add(file_close);
-        data.add(data_nodes);
+        //data.add(data_nodes);
 
 
     }
