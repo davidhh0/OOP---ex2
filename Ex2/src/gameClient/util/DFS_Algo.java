@@ -78,7 +78,6 @@ public class DFS_Algo {
      * Doing DFS_Transpose on the same graph but starting from the last end time from the sorted array.
      */
     public void StartDFS() {
-
         int nodeID = -1;
         //init all nodes into white
         for (node_data nodeData : this._graph.getV()) {
@@ -109,8 +108,7 @@ public class DFS_Algo {
         if (greenCount != this._graph.nodeSize()) {
             this.StartDFS();
         }
-
-        System.out.println("finish DFS");
+        greenCount=0;timer=0;
 
     }
 

@@ -1,17 +1,21 @@
 package Tests;
 
+import Server.Game_Server_Ex2;
 import api.*;
+import gameClient.BreakTheGraph;
+import gameClient.util.DFS_Algo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 public class JunitTest {
-    DWGraph_DS graph = new DWGraph_DS();
+   // DWGraph_DS graph = new DWGraph_DS();
     double EPS = 0.0001;
 
     @Test
     public void AddAndRemoveTest() {
+        DWGraph_DS graph = new DWGraph_DS();
         NodeData n1 = new NodeData(1);
         NodeData n2 = new NodeData(2);
 
@@ -133,7 +137,7 @@ public class JunitTest {
 
 
     @Test
-    public void LoadTest(){
+    public void LoadTest() {
         DWGraph_DS graph = Graph_1B();
         DWGraph_Algo algo = new DWGraph_Algo();
         algo.load("TestSave1.json");
@@ -168,24 +172,25 @@ public class JunitTest {
 
     @Test
     public void PQtest2() {
+        DWGraph_DS graph = new DWGraph_DS();
         int initialCapacity = 10;
-        HashMap<Integer,Double> tag =new HashMap<>();
+        HashMap<Integer, Double> tag = new HashMap<>();
         PriorityQueue<node_data> PQ = new PriorityQueue<node_data>(initialCapacity, new Comparator<node_data>() {
             @Override
             public int compare(node_data o1, node_data o2) {
-                if (tag.get(o1.getKey()) < tag.get(o2.getKey()) )
-                     return -1;
+                if (tag.get(o1.getKey()) < tag.get(o2.getKey()))
+                    return -1;
                 else
-            return 1;
+                    return 1;
             }
 
         });
         graph.addNode(new NodeData(1));
         graph.addNode(new NodeData(2));
         graph.addNode(new NodeData(3));
-        tag.put(1,5.0);
-        tag.put(2,10.0);
-        tag.put(3,2.0);
+        tag.put(1, 5.0);
+        tag.put(2, 10.0);
+        tag.put(3, 2.0);
         PQ.offer(graph.getNode(1));
         PQ.offer(graph.getNode(2));
         PQ.offer(graph.getNode(3));
@@ -213,8 +218,40 @@ public class JunitTest {
         dw_graph_algorithms graph_algo3B = new DWGraph_Algo();
         graph_algo3B.init(Graph_3B());
 
-        Assertions.assertEquals(graph_algo3B.shortestPathDist(0,0), 0);
+        Assertions.assertEquals(graph_algo3B.shortestPathDist(0, 0), 0);
 
+    }
+
+    // ----------------------------- Tests for Part II ------------------------------------------
+
+    @Test
+    public void DFStest() {
+        dw_graph_algorithms theGraph = new DWGraph_Algo();
+        theGraph.load("data/A1");
+        directed_weighted_graph graph = theGraph.getGraph();
+        DFS_Algo dfs = new DFS_Algo(graph);
+        dfs.StartDFS();
+        Assertions.assertEquals(dfs._graphList.size(), 1);
+    }
+
+    @Test
+    public void DFStest2() {
+        dw_graph_algorithms theGraph = new DWGraph_Algo();
+        theGraph.load("data/A2");
+        directed_weighted_graph graph = theGraph.getGraph();
+        DFS_Algo dfs = new DFS_Algo(graph);
+        dfs.StartDFS();
+        Assertions.assertEquals(dfs._graphList.size(), 1);
+    }
+
+    @Test
+    public void DFSfor2components() {
+        dw_graph_algorithms theGraph = new DWGraph_Algo();
+        theGraph.load("data/A4broken");
+        directed_weighted_graph graph = theGraph.getGraph();
+        DFS_Algo dfs = new DFS_Algo(graph);
+        dfs.StartDFS();
+        Assertions.assertEquals(dfs._graphList.size(), 2);
     }
 
 }
