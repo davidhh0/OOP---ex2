@@ -22,12 +22,9 @@ import javax.swing.JOptionPane;
 
 
 /**
- * This class represents a very simple GUI class to present a
- * game on a graph - you are welcome to use this class - yet keep in mind
- * that the code is not well written in order to force you improve the
- * code and not to take it "as is".
+ * This class represents a GUI class to present a game on a graph.
  */
-public class MyFrame extends JFrame implements MouseListener, MouseMotionListener, ActionListener {
+public class MyFrame extends JFrame {
     private Arena _ar;
     private gameClient.util.Range2Range _w2f;
     public static gameClient.util.Range2Range worldtoframe;
@@ -41,15 +38,24 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
     private JFrame frame;
     private HashMap<edge_data, Boolean> wasDrawn;
     private int nRadius = 6;
-    private int _numberOfAgents = 1;
-    private static BufferedImage imageWallpaper ;
+    private static BufferedImage imageWallpaper;
 
-
+    /**
+     * Constructor for JFrame and then calls the main function init().
+     *
+     * @param a
+     */
     MyFrame(String a) {
         super(a);
         init();
     }
 
+    /**
+     * The main function that initializes the frame.
+     * The method gives the user a pleasant experience game.
+     * It sets a pokemon background photo, handles resize frame and makes sure when the user wishes to close the window.
+     * Furthermore, it allows the user to save a photo of the game whenever she/he wants to.
+     */
     public void init() {
         this.setSize(_win_h, _win_w);
         this.setBackground(Color.BLACK);
@@ -58,22 +64,16 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         frame = this;
         try {
             imageWallpaper = ImageIO.read(new File("Pokemon icons", "Wallpaper3.png"));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         wasDrawn = new HashMap<>();
         MenuBar menu_bar = new MenuBar();
         Menu menu = new Menu("File");
-        //Menu data = new Menu("Data");
         menu_bar.add(menu);
-       // menu_bar.add(data);
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
         this.setMenuBar(menu_bar);
         MenuItem file_save_photo = new MenuItem("Save photo");
         MenuItem file_close = new MenuItem("Close");
-        MenuItem file_restart = new MenuItem("Restart(not working)");
-        MenuItem data_nodes = new MenuItem("Nodes");
         Toolkit.getDefaultToolkit().setDynamicLayout(false);
         file_save_photo.addActionListener(new ActionListener() {
             @Override
@@ -106,19 +106,6 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
                 }
             }
         });
-
-        file_restart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Restarting..", JOptionPane.YES_NO_OPTION);
-                if (i == 0) {
-                    Thread client = new Thread(new Ex2_Client());
-                    client.start();
-                    //Ex2_Client.stop();
-                    //init();
-                }
-            }
-        });
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 int i = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Closing..", JOptionPane.YES_NO_OPTION);
@@ -134,7 +121,6 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         this.getRootPane().addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 // This is only called when the user releases the mouse button.
-
                 int newHeight = e.getComponent().getHeight();
                 int newWidth = e.getComponent().getWidth();
                 if (frame.isActive()) {
@@ -151,78 +137,73 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
             }
         });
 
-
-        data_nodes.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         menu.add(file_save_photo);
-       // menu.add(file_restart);
         menu.add(file_close);
-        //data.add(data_nodes);
-
 
     }
 
+    /**
+     * This function draws the graph details on the frame including:
+     * time to end, number of pokemons, number of agents, logged in ID, total value of the game.
+     * for every agent:
+     * id of the agent, speed , value gained by the agent.
+     *
+     * @param g
+     */
     private void drawGraphDetails(Graphics g) {
         _ar.get_info();
         int width = this.getWidth();
-        int height = this.getHeight();
         String agentString = "";
         int i = 0;
-        int sum=0;
+        int sum = 0;
         g.setFont(new Font("Times New Roman", Font.PLAIN, width / 100));
 
         ArrayList<String> agentStrings = new ArrayList<>();
-//        g.setColor(Color.white);
         if (_ar.get_info().get(0).split(",").length > 1) {
             ArrayList<CL_Agent> agentArray = (ArrayList<CL_Agent>) Arena.getAgents(_ar.get_info().get(0), _ar.getGraph());
             for (CL_Agent run : agentArray) {
                 agentString = "id: " + run.getID() + ", speed: " + run.getSpeed() + ", value: " + run.getValue();
-                sum+=run.getValue();
+                sum += run.getValue();
                 agentStrings.add(agentString);
                 i++;
 
             }
         }
-
-        g.setColor(new Color(97,198,207));
-        g.fillRoundRect(5,185,width / 8,  i*20,20,20);
-        g.setColor(new Color(46,103,161));
-        g.drawRoundRect(5, 185 , width / 8, i*20, 20, 20);
+        g.setColor(new Color(97, 198, 207));
+        g.fillRoundRect(5, 185, width / 8, i * 20, 20, 20);
+        g.setColor(new Color(46, 103, 161));
+        g.drawRoundRect(5, 185, width / 8, i * 20, 20, 20);
 
         for (int j = 0; j < i; j++) {
             g.drawString(agentStrings.get(j), 12, 200 + j * 15);
         }
         //For Details
-        g.setColor(new Color(97,198,207));
-        g.fillRoundRect(5,70,width / 8, 80,20,20);
-        g.setColor(new Color(46,103,161));
+        g.setColor(new Color(97, 198, 207));
+        g.fillRoundRect(5, 70, width / 8, 80, 20, 20);
+        g.setColor(new Color(46, 103, 161));
         g.drawRoundRect(5, 70, width / 8, 80, 20, 20);
-        //g.setColor(Color.black);
 
-
-//        g.drawRoundRect(5, 70, width / 8, (int) (height / 7.5), 20, 20);
-
-        // g.drawRoundRect((int) (width *0.85), height / 5, width / 8, height / 8, 20, 20);
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90)+8));
+        g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90) + 8));
         g.drawString("Arena Details", 12, 65);
-        g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90)+5));
+        g.setFont(new Font("Times New Roman", Font.BOLD, (width / 90) + 5));
         g.drawString("Agents Details", 12, 180);
-        g.setColor(new Color(46,103,161));
+        g.setColor(new Color(46, 103, 161));
         g.setFont(new Font("Times New Roman", Font.PLAIN, (width / 90)));
         g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 1000) + "s", 12, 70 + 15);
         g.drawString("Number of Agents: " + Ex2_Client._numberOfAgents, 12, 70 + 30);
-        g.drawString("Number of Pokemons: "+_ar.getPokemons().size(),12,70+45);
-        g.drawString("Logged in id: "+(Ex2_Client.isLogged?Ex2_Client.TzNumber:"-1"),12,70+60);
-        g.drawString("Total value: "+sum,12,70+75);
-        // g.drawString("Time to end: " + (Ex2_Client.timeToEnd / 10) + "ms", (int) (width * 0.85) + 12, height / 4 + 15);
+        g.drawString("Number of Pokemons: " + _ar.getPokemons().size(), 12, 70 + 45);
+        g.drawString("Logged in id: " + (Ex2_Client.isLogged ? Ex2_Client.TzNumber : "-1"), 12, 70 + 60);
+        g.drawString("Total value: " + sum, 12, 70 + 75);
 
     }
 
+    /**
+     * @param component
+     * @return Captured photo of the current moment.
+     * this method helps to the save_photo function.
+     * @throws AWTException
+     */
     private static BufferedImage getScreenShot(Component component) throws AWTException {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
@@ -246,6 +227,13 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
     }
 
+    /**
+     * Main function paint for JFrame class. It calls all the drawing function of this class.
+     * This function draws the entire frame on a buffered graphics and
+     * then let the user see the changes only when full buffered. This method allows smooth game experience.
+     *
+     * @param g
+     */
     public void paint(Graphics g) {
         _buffer_img = createImage(this.getWidth(), this.getHeight());
         _buffer_graphics = _buffer_img.getGraphics();
@@ -253,31 +241,23 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         _buffer_graphics.setFont(new Font("Times New Roman", Font.BOLD, (this.getWidth() * this.getHeight()) / 50000));
 
 
-        _buffer_graphics.drawImage(imageWallpaper, 0, 0, this.getWidth(), this.getHeight(), 0 ,0, (int)(imageWallpaper.getWidth()*0.85), imageWallpaper.getHeight() ,this);
-//            _buffer_graphics.drawImage(image, 0, 0, this.getWidth(), this.getHeight(),this);
-
+        _buffer_graphics.drawImage(imageWallpaper, 0, 0, this.getWidth(), this.getHeight(), 0, 0, (int) (imageWallpaper.getWidth() * 0.85), imageWallpaper.getHeight(), this);
 
         int w = this.getWidth();
         int h = this.getHeight();
-        //drawGraphDetails(_buffer_graphics);
 
         //if (isResized) {
         try {
-//            BufferedImage image = ImageIO.read(new File("Ex2/Pokemon icons", "Wallpaper3.png"));
             white_buffer_img = createImage((int) (w * 0.85), this.getHeight());
             white_buffer_graphics = white_buffer_img.getGraphics();
-            white_buffer_graphics.drawImage(imageWallpaper, 0, 0, (int)(imageWallpaper.getWidth()*0.15), this.getHeight(), (int)(imageWallpaper.getWidth()*0.85),0,imageWallpaper.getWidth(),imageWallpaper.getHeight(),null);
+            white_buffer_graphics.drawImage(imageWallpaper, 0, 0, (int) (imageWallpaper.getWidth() * 0.15), this.getHeight(), (int) (imageWallpaper.getWidth() * 0.85), 0, imageWallpaper.getWidth(), imageWallpaper.getHeight(), null);
             drawGraphDetails(white_buffer_graphics);
             g.drawImage(white_buffer_img, (int) (w * 0.85), 0, this);
             isResized = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //     }
 
-        //g.clearRect(0, 0, w, h);
-        //	updateFrame();
-        //  drawInfo(_buffer_graphics);
         drawGraph(_buffer_graphics);
 
         drawAgants(_buffer_graphics);
@@ -289,17 +269,12 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
 
     }
 
-    private void drawInfo(Graphics g) {
-        List<String> str = _ar.get_info();
-        String dt = "none";
-        for (int i = 0; i < str.size(); i++) {
-            g.drawString(str.get(i) + " dt: " + dt, 100, 60 + i * 20);
-        }
-
-    }
-
+    /**
+     * This method draws the graph nodes and edges with auxiliary functions: drawEdge and drawNode.
+     *
+     * @param g
+     */
     private void drawGraph(Graphics g) {
-
         directed_weighted_graph gg = _ar.getGraph();
         Iterator<node_data> iter = gg.getV().iterator();
         while (iter.hasNext()) {
@@ -316,16 +291,17 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         }
     }
 
+    /**
+     * This function draws the pokemons on the graph by considering the value of each one and decide the pokemon icon
+     * for each value.
+     *
+     * @param g
+     */
     private void drawPokemons(Graphics g) {
         List<CL_Pokemon> fs = _ar.getPokemons();
-        //int totalPokemons = fs.size();
-
-        int count = 0;
         if (fs != null) {
             Iterator<CL_Pokemon> itr = fs.iterator();
-
             while (itr.hasNext()) {
-
                 CL_Pokemon f = itr.next();
                 Point3D c = f.getLocation();
                 int r = 10;
@@ -336,7 +312,6 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
                 if (c != null) {
 
                     geo_location fp = this._w2f.world2frame(c);
-                    //g.fillOval(, 2 * r, 2 * r);
                     try {
                         String toRead;
                         if (f.getValue() < 6) {
@@ -358,20 +333,23 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
                     }
 
                 }
-                count++;
             }
 
         }
     }
 
+    /**
+     * This function draws the agents on the graph by considering the speed of each one and decide the agent icon
+     * for each speed value.
+     *
+     * @param g
+     */
     private void drawAgants(Graphics g) {
         List<CL_Agent> rs = _ar.getAgents();
-        //	Iterator<OOP_Point3D> itr = rs.iterator();
         g.setColor(Color.red);
         int i = 0;
         while (rs != null && i < rs.size()) {
             geo_location c = rs.get(i).getLocation();
-            //edge_data p = rs.get(i).get_curr_edge();
             int id = rs.get(i).getID();
             int speed = (int) rs.get(i).getSpeed();
             String toRead = "p" + speed + ".png";
@@ -386,31 +364,43 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
                     g.drawImage(image, (int) fp.x() - r, (int) fp.y() - r, null);
                     g.drawString("" + id, (int) fp.x() - r, (int) fp.y() - r);
                     g.setColor(Color.RED);
-                    //g.drawString("Src: " + Ex2_Client.AgentToPok.get(id).get_edge().getDest() + " Dest: " + Ex2_Client.AgentToPok.get(id).get_edge().getSrc(), (int) fp.x() - 2 * r, (int) fp.y() - 2 * r);
-                    //g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }
         }
     }
 
+    /**
+     * This function draws a basic nodes on the graph.
+     *
+     * @param n
+     * @param r
+     * @param g
+     */
     private void drawNode(node_data n, int r, Graphics g) {
         g.setFont(null);
         g.setColor(Color.WHITE);
         geo_location pos = n.getLocation();
         geo_location fp = realLocation(pos);
-        //geo_location fp = this._w2f.world2frame(pos);
         g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
         g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 2 * r);
     }
 
+    /**
+     * @param pos
+     * @return the real location to thge given geo_location pos based on this world2frame.
+     */
     public static geo_location realLocation(geo_location pos) {
         return worldtoframe.world2frame(pos);
     }
 
+    /**
+     * This function draws an edge represented by a basic line from node to node.
+     *
+     * @param e
+     * @param g
+     */
     private void drawEdge(edge_data e, Graphics g) {
         directed_weighted_graph gg = _ar.getGraph();
         geo_location s = gg.getNode(e.getSrc()).getLocation();
@@ -421,49 +411,7 @@ public class MyFrame extends JFrame implements MouseListener, MouseMotionListene
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(1.5F));
         g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-
-        //	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-
-    }
-
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
-    }
 
 }

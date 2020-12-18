@@ -22,6 +22,13 @@ public class BreakTheGraph {
     int rangePerAgent = 0;
     double mostLeft;
 
+    /**
+     * Constructor for breaking a graph into responsibility area based on given graph, number of nodes and agents.
+     *
+     * @param graph
+     * @param nodes
+     * @param agents
+     */
     public BreakTheGraph(directed_weighted_graph graph, int nodes, int agents) {
         this.theGraph = graph;
         numOfNodes = nodes;
@@ -29,7 +36,7 @@ public class BreakTheGraph {
         numOfAgents = agents;
         ranges = new ArrayList<>();
         graphs = new ArrayList<>();
-        rangePerAgent = (int)(getRange(graph) / numOfAgents);
+        rangePerAgent = (int) (getRange(graph) / numOfAgents);
         for (int i = 0; i < numOfAgents; i++) {
             rangeToNode.put(i, new ArrayList<>());
             graphs.add(new DWGraph_DS());
@@ -39,26 +46,29 @@ public class BreakTheGraph {
         groupByEdges();
     }
 
-    private double getRange(directed_weighted_graph graph){
+    /**
+     * @param graph
+     * @return Range of x value for the most left node to the most right one.
+     */
+    private double getRange(directed_weighted_graph graph) {
         double min = Double.MAX_VALUE;
         double max = Double.MIN_VALUE;
 
-        for(node_data node:graph.getV()){
+        for (node_data node : graph.getV()) {
             geo_location pos = node.getLocation();
             geo_location real = MyFrame.realLocation(pos);
 
-            if(real.x()<min){
-                min=real.x();
-                mostLeft=real.x();
+            if (real.x() < min) {
+                min = real.x();
+                mostLeft = real.x();
             }
-            if(real.x()>max){
-                max=real.x();
+            if (real.x() > max) {
+                max = real.x();
             }
-
-
         }
-        return (max-min);
+        return (max - min);
     }
+
     /**
      * Divide the graph into (numOfAgents) parts. Each part contains (numOfNodes/numOfAgents) nodes.
      * Each part is connected.
@@ -77,9 +87,11 @@ public class BreakTheGraph {
                 }
             }
         }
-        System.out.println();
     }
 
+    /**
+     * This method determines which edges belong to which graphs based on their location.
+     */
     public void groupByEdges() {
         for (int i = 0; i < numOfAgents; i++) {
             ArrayList<node_data> current = rangeToNode.get(i);
@@ -90,7 +102,7 @@ public class BreakTheGraph {
                         graphs.get(i).addNode(theGraph.getNode(run.getSrc()));
                         graphs.get(i).addNode(theGraph.getNode(run.getDest()));
                         graphs.get(i).connect(run.getSrc(), run.getDest(), run.getWeight());
-                        if(theGraph.getEdge(run.getDest(),run.getSrc())!=null){
+                        if (theGraph.getEdge(run.getDest(), run.getSrc()) != null) {
                             graphs.get(i).connect(run.getDest(), run.getSrc(), run.getWeight());
                         }
                     }
@@ -98,15 +110,16 @@ public class BreakTheGraph {
             }
 
         }
-        System.out.println();
 
     }
 
-
+    /**
+     * This method divides the graph into (numberOfAgents) different ranges.
+     */
     public void getRange() {
-        double start = mostLeft, end = mostLeft+rangePerAgent;
+        double start = mostLeft, end = mostLeft + rangePerAgent;
         for (int i = 0; i < numOfAgents; i++) {
-            ranges.add(new numRange((int)start, (int)end));
+            ranges.add(new numRange((int) start, (int) end));
             start += rangePerAgent;
             end += rangePerAgent;
         }

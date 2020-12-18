@@ -13,12 +13,21 @@ public class DWGraph_DS implements directed_weighted_graph {
     private int NumberOfEdges = 0;
     private int ModeCount = 0;
 
+    /**
+     * Empty constructor for a directed weighted graph.
+     */
     public DWGraph_DS(){
         edges = new HashMap<>();
         vertices = new HashMap<>();
         inComing = new HashMap<>();
 
     }
+
+    /**
+     * This method checks if the given graph g1 is equivalent to this graph, considering all parameters.
+     * @param g1
+     * @return true iff g1 is a graph and equals to this graph.
+     */
     @Override
     public boolean equals(Object g1) {
         if (g1 == this)
@@ -49,6 +58,10 @@ public class DWGraph_DS implements directed_weighted_graph {
         return edges;
     }
 
+    /**
+     * @param key
+     * @return list of nodes represented as integers that connected TO the given node key.
+     */
     public ArrayList<Integer> getInComing(int key){
         return inComing.get(key);
     }

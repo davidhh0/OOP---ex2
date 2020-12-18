@@ -19,7 +19,9 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.Type;
 import java.util.*;
 
-
+/**
+ * This class is the main engine for the game.
+ */
 public class Ex2_Client implements Runnable {
     private static MyFrame _win;
     private static EnteringFrame _enterWin;
@@ -30,27 +32,31 @@ public class Ex2_Client implements Runnable {
     public static HashMap<Integer, EdgeValue> AgentToPok = new HashMap<>();
     private static PriorityQueue<AgentEdgeDist> agentEdgeDistQ = new PriorityQueue<>();
     private static HashMap<Integer, directed_weighted_graph> agentToGraph;
-    public static boolean isLogged=false;
+    public static boolean isLogged = false;
     private static ArrayList<directed_weighted_graph> graphs = new ArrayList<>();
-    public static int TzNumber=-1;
-    private static int Senario=-1;
+    public static int TzNumber = -1;
+    private static int Senario = -1;
     private static boolean isArgs = false;
     private static Object lock = new Object();
+
     public static void main(String[] args) {
-        if(args.length>1){
+        if (args.length > 1) {
             TzNumber = Integer.parseInt(args[0]);
             Senario = Integer.parseInt(args[1]);
             isArgs = true;
         }
-
         Thread client = new Thread(new Ex2_Client());
         client.start();
-
     }
 
+    /**
+     *Starting the threaded game -
+     * gets the ID and scenario number and starts the game.
+     * This method also calls the DFS algorithm to determine how many connected components there are in game.
+     */
     @Override
     public void run() {
-        if(!isArgs) {
+        if (!isArgs) {
             _enterWin = new EnteringFrame("Enter Ex2");
             //_enterWin.show();
             Thread t = new Thread() {
@@ -88,19 +94,17 @@ public class Ex2_Client implements Runnable {
 
 
         game_service game = Game_Server_Ex2.getServer(Senario); // you have [0,23] games
-        if(TzNumber>0){
-            isLogged=game.login(TzNumber);
+        if (TzNumber > 0) {
+            isLogged = game.login(TzNumber);
         }
-//	 	int id = 206320863;
-//		game.login(id);
 
-        //isLogged=game.login();
         init(game);
 
         DWGraph_Algo algo = new DWGraph_Algo();
         System.out.println(game.toString());
         Gson gson = new Gson();
-        Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
+        Type JsonObjectType = new TypeToken<JsonObject>() {
+        }.getType();
         JsonObject gameJsonObject = gson.fromJson(game.toString(), JsonObjectType);
         String filepath = gameJsonObject.get("GameServer").getAsJsonObject().get("graph").getAsString();
         algo.load(filepath);
@@ -114,43 +118,39 @@ public class Ex2_Client implements Runnable {
         PriorityQueue<directed_weighted_graph> graphsQ = new PriorityQueue<>(new Comparator<directed_weighted_graph>() {
             @Override
             public int compare(directed_weighted_graph o1, directed_weighted_graph o2) {
-                if(o1.nodeSize()>o2.nodeSize()) return 1;
-                if(o1.nodeSize()<o2.nodeSize()) return -1;
+                if (o1.nodeSize() > o2.nodeSize()) return 1;
+                if (o1.nodeSize() < o2.nodeSize()) return -1;
                 return 0;
             }
         });
 
 
-        if(dfs_algo._graphList.size()>1){
-            for(directed_weighted_graph g : dfs_algo._graphList){
+        if (dfs_algo._graphList.size() > 1) {
+            for (directed_weighted_graph g : dfs_algo._graphList) {
                 graphsQ.offer(g);
             }
-            while(graphsQ.size()>1){
+            while (graphsQ.size() > 1) {
                 directed_weighted_graph g1 = graphsQ.poll();
-                new BreakTheGraph(g1,g1.getV().size(),1);
+                new BreakTheGraph(g1, g1.getV().size(), 1);
                 _numberOfAgents--;
                 graphs.addAll(BreakTheGraph.graphs);
             }
             directed_weighted_graph g = graphsQ.poll();
-            new BreakTheGraph(g,g.getV().size(),_numberOfAgents);
+            new BreakTheGraph(g, g.getV().size(), _numberOfAgents);
             graphs.addAll(BreakTheGraph.graphs);
 
-        }else{
-            new BreakTheGraph(gg,gg.getV().size(),_numberOfAgents);
+        } else {
+            new BreakTheGraph(gg, gg.getV().size(), _numberOfAgents);
 
             graphs.addAll(BreakTheGraph.graphs);
         }
 
         for (int i = 0; i < graphs.size(); i++) {
-            graphToNumAgent.put(graphs.get(i),i);
+            graphToNumAgent.put(graphs.get(i), i);
         }
 
-        //new BreakTheGraph(gg,gg.getV().size(),_numberOfAgents);
-
-
-        //_win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + game.toString());
-        for(directed_weighted_graph graph : graphs){
-            init2(game,graph,graphToNumAgent.get(graph));
+        for (directed_weighted_graph graph : graphs) {
+            init2(game, graph, graphToNumAgent.get(graph));
         }
         game.startGame();
         int ind = 0;
@@ -160,8 +160,8 @@ public class Ex2_Client implements Runnable {
             String lg = game.move();
             List<CL_Agent> log = Arena.getAgents(lg, gg);
             _ar.setAgents(log);
-            for(Map.Entry<directed_weighted_graph,Integer> entry : graphToNumAgent.entrySet()){
-                moveAgants(game, entry.getKey(),entry.getValue(), lg);
+            for (Map.Entry<directed_weighted_graph, Integer> entry : graphToNumAgent.entrySet()) {
+                moveAgants(game, entry.getKey(), entry.getValue(), lg);
             }
 
             try {
@@ -182,24 +182,20 @@ public class Ex2_Client implements Runnable {
     }
 
     /**
-     * Moves each of the agents along the edge,
-     * in case the agent is on a node the next destination (next edge) is chosen (randomly).
-     *
+     * This function determines where each agent goes.
+     * There is a Priority Queue for all edges considering the total pokemon values on it.
+     * For each agent,
+     * the method considers the graph the agent belongs to and adds the value edges to the Priority Queue, considering:
+     * The shortest path distance from the agent to the valued edge including the agent speed.
+     * Then, the method run through the Priority Queue and sends each agent to the best valued edge FOR it.
      * @param game
      * @param gg
      * @param
      */
     private static void moveAgants(game_service game, directed_weighted_graph gg, int agentID, String lg) {
-
-//
-
-
-
         String fs = game.getPokemons();
         List<CL_Pokemon> ffs = Arena.json2Pokemons(fs, gg);
         _ar.setPokemons(ffs);
-
-
         //Priority queue of edges by value
         PriorityQueue<EdgeValue> edgesQ = new PriorityQueue<>();
         //Map of edge to total val
@@ -218,21 +214,19 @@ public class Ex2_Client implements Runnable {
                 edgeToType.put(pok.get_edge(), pok.getType());
             }
         }
-
         //Adding edge to the queue
         for (Map.Entry<edge_data, Double> entry : edgeMap.entrySet()) {
             CL_Agent agent = getAgent(agentID, lg, _ar.getGraph());
             DWGraph_Algo algo = new DWGraph_Algo();
             algo.init(gg);
             edge_data edge = entry.getKey();
-            if(edge!=null) {
-                double pathDist = (algo.shortestPathDist(agent.getSrcNode(), entry.getKey().getSrc()))/(agent.getSpeed());
+            if (edge != null) {
+                double pathDist = (algo.shortestPathDist(agent.getSrcNode(), entry.getKey().getSrc())) / (agent.getSpeed());
                 List<node_data> path = algo.shortestPath(agent.getSrcNode(), entry.getKey().getSrc());
                 //1-entry
                 //bigger value min dist -> value* 1/(dist[0;infinity]*10)
-                if(pathDist>=0 && path.size()>0) {
+                if (pathDist >= 0 && path.size() > 0) {
                     if (pathDist != 0) {
-
                         EdgeValue edgeValue = new EdgeValue(entry.getValue() * (1 / (pathDist * 10)), entry.getKey(), edgeToType.get(entry.getKey()));
                         edgesQ.offer(edgeValue);
                     } else {
@@ -241,16 +235,12 @@ public class Ex2_Client implements Runnable {
                     }
                 }
             }
-//            EdgeValue edgeValue = new EdgeValue(entry.getValue(), entry.getKey(), edgeToType.get(entry.getKey()));
-//            edgesQ.offer(edgeValue);
+
         }
         //Setting type for EdgeValue
-
-
         while (!edgesQ.isEmpty()) {
             //Most valued edge
             EdgeValue edge = edgesQ.poll();
-
             if (edge.get_edge() != null) {
                 //edge in the graph
                 if (gg.getNode(edge.get_edge().getSrc()) != null) {
@@ -266,41 +256,15 @@ public class Ex2_Client implements Runnable {
             }
         }
 
-//            for (CL_Agent agent : copy_listAgnets) {
-//                distCalc(gg, agent.getSrcNode(), edge.get_edge(), agent);
-//            }
-//
-//            AgentEdgeDist dist = agentEdgeDistQ.poll();
-//            CL_Agent agent = null;
-//            for (CL_Agent ag : copy_listAgnets) {
-//                if (ag.getID() == dist.get_agentID()) {
-//                    agent = ag;
-//                    break;
-//                }
-//            }
-//            for (int i = 0; i < copy_listAgnets.size(); i++) {
-//                CL_Agent agent1 = copy_listAgnets.get(i);
-//                if (agent1.getID() == agent.getID()) {
-//                    copy_listAgnets.remove(i);
-//                    break;
-//                }
-//            }
-//            if (agent == null) {
-//                break;
-//            }
-//            if (agent.getNextNode() == -1) {
-//                int dest = nextNode(gg, agent, edge);
-//                int id = agent.getID();
-//                AgentToPok.put(agent.getID(), edge);
-//                game.chooseNextEdge(id, dest);
-//                //System.out.println("Agent: " + agent.getID() + ", val: " + agent.getValue() + " turned to node: " + dest);
-//            }
-//            agentEdgeDistQ.clear();
-
-
     }
 
-    private static CL_Agent getAgent(int id, String lg, directed_weighted_graph gg){
+    /**
+     * @param id
+     * @param lg
+     * @param gg
+     * @return CL_Agent represented by the given id.
+     */
+    private static CL_Agent getAgent(int id, String lg, directed_weighted_graph gg) {
         List<CL_Agent> log = Arena.getAgents(lg, gg);
         for (CL_Agent ag : log) {
             if (ag.getID() == id) {
@@ -310,116 +274,101 @@ public class Ex2_Client implements Runnable {
         return null;
     }
 
+    /**
+     * @param g
+     * @param agent
+     * @param edgeValue
+     * @return the weight path value for CL_Agent agent to the given edgeValue by using shortestpath method.
+     */
     private static int nextNode(directed_weighted_graph g, CL_Agent agent, EdgeValue edgeValue) {
         DWGraph_Algo algo = new DWGraph_Algo();
         algo.init(g);
-
         if (edgeValue.get_type() > 0) {
             if (agent.getSrcNode() == edgeValue.get_edge().getSrc()) {
                 return edgeValue.get_edge().getDest();
-
             }
-
             List<node_data> path = algo.shortestPath(agent.getSrcNode(), edgeValue.get_edge().getSrc());
-            if(path.size()<1){
-
+            if (path.size() < 1) {
                 return -1;
             }
             return path.get(1).getKey();
         } else {
             if (agent.getSrcNode() == edgeValue.get_edge().getDest()) {
-
                 return edgeValue.get_edge().getSrc();
             }
-
             List<node_data> path = algo.shortestPath(agent.getSrcNode(), edgeValue.get_edge().getDest());
-            if(path.size()<1){
+            if (path.size() < 1) {
 
                 return -1;
             }
             return path.get(1).getKey();
         }
-
-
     }
 
-
-    private static void distCalc(directed_weighted_graph g, int src, edge_data edge, CL_Agent agent) {
-        DWGraph_Algo algo = new DWGraph_Algo();
-        algo.init(g);
-        double dist = algo.shortestPathDist(src, edge.getSrc());
-        AgentEdgeDist agentEdgeDist = new AgentEdgeDist(agent.getID(), dist / agent.getSpeed());
-        agentEdgeDistQ.offer(agentEdgeDist);
-    }
-
-
-    private void init2(game_service game, directed_weighted_graph gg, int agentID){
+    /**
+     * This method is an auxiliary for initializing the game.
+     * It places the agents on the right spot in the beginning and checks if all the agents are inserted into the game.
+     * @param game
+     * @param gg
+     * @param agentID
+     */
+    private void init2(game_service game, directed_weighted_graph gg, int agentID) {
         String fs = game.getPokemons();
         int rs = agentID;
-
-
-
         //Placing the agents
         PriorityQueue<EdgeValue> edgesQ = new PriorityQueue<>();
 
         HashMap<edge_data, Double> edgeMap = new HashMap<>();
         HashMap<edge_data, Integer> edgeToType = new HashMap<>();
 
-        List<CL_Pokemon> pokemonsList = Arena.json2Pokemons(fs,gg);
+        List<CL_Pokemon> pokemonsList = Arena.json2Pokemons(fs, gg);
 
         for (CL_Pokemon pok : pokemonsList) {
-            if(edgeMap.containsKey(pok.get_edge())){
-                edgeMap.put(pok.get_edge(),edgeMap.get(pok.get_edge())+pok.getValue());
-                edgeToType.put(pok.get_edge(),pok.getType());
-            }else{
-                edgeMap.put(pok.get_edge(),pok.getValue());
-                edgeToType.put(pok.get_edge(),pok.getType());
+            if (edgeMap.containsKey(pok.get_edge())) {
+                edgeMap.put(pok.get_edge(), edgeMap.get(pok.get_edge()) + pok.getValue());
+                edgeToType.put(pok.get_edge(), pok.getType());
+            } else {
+                edgeMap.put(pok.get_edge(), pok.getValue());
+                edgeToType.put(pok.get_edge(), pok.getType());
             }
         }
 
-        for(Map.Entry<edge_data,Double> entry : edgeMap.entrySet()){
+        for (Map.Entry<edge_data, Double> entry : edgeMap.entrySet()) {
             EdgeValue edgeValue = new EdgeValue(entry.getValue(), entry.getKey(), edgeToType.get(entry.getKey()));
             edgesQ.offer(edgeValue);
         }
         int agentNum = 0;
         boolean isAdded = false;
-        while(!edgesQ.isEmpty()) {
+        while (!edgesQ.isEmpty()) {
             EdgeValue edgeValue = edgesQ.poll();
             if (edgeValue.get_edge() != null) {
                 if (edgeValue.get_type() < 0) {
                     game.addAgent(edgeValue.get_edge().getSrc());
                     agentNum++;
-                    isAdded=true;
+                    isAdded = true;
                     break;
                 } else {
                     game.addAgent(edgeValue.get_edge().getDest());
                     agentNum++;
-                    isAdded=true;
+                    isAdded = true;
                     break;
                 }
             }
         }
 
-        if(!isAdded){
-            for(node_data node : gg.getV()){
+        if (!isAdded) {
+            for (node_data node : gg.getV()) {
                 game.addAgent(node.getKey());
                 break;
             }
         }
-//        Gson gson = new Gson();
-//        Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
-//        JsonObject gameJsonObject = gson.fromJson(game.toString(), JsonObjectType);
-//        int agNum = gameJsonObject.get("GameServer").getAsJsonObject().get("agents").getAsInt();
-//        while(agentNum<agNum){
-//            game.addAgent(0);
-//            agentNum++;
-//        }
-
-
-
-
     }
 
+    /**
+     * This method initializes the game by setting the graph,agents,pokemons from the given game in a Json format
+     * to the Arena parameter.
+     * @param game
+     */
     private void init(game_service game) {
         String g = game.getGraph();
 
@@ -427,13 +376,13 @@ public class Ex2_Client implements Runnable {
         DWGraph_Algo algo = new DWGraph_Algo();
         System.out.println(game.toString());
         Gson gson = new Gson();
-        Type JsonObjectType = new TypeToken<JsonObject>() {}.getType();
+        Type JsonObjectType = new TypeToken<JsonObject>() {
+        }.getType();
         JsonObject gameJsonObject = gson.fromJson(game.toString(), JsonObjectType);
         String filepath = gameJsonObject.get("GameServer").getAsJsonObject().get("graph").getAsString();
         algo.load(filepath);
         directed_weighted_graph gg = algo.getGraph();
 
-        //gg.init(g);
         _ar = new Arena();
 
         ArrayList<String> arrayList = new ArrayList<String>();
@@ -462,48 +411,37 @@ public class Ex2_Client implements Runnable {
                 Arena.updateEdge(pokemonArrayList.get(a), gg);
             }
 
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        catch (JSONException e) {e.printStackTrace();}
 
         arrayList.add(game.getAgents());
         arrayList.add(game.getGraph());
         arrayList.add(game.getPokemons());
-        updateGraphInfo(game,_ar);
+        updateGraphInfo(game, _ar);
     }
 
-    public void mappingAgentToGraph(directed_weighted_graph graph) {
-        directed_weighted_graph gg = _ar.getGraph();
-
-        Iterator<node_data> iter = gg.getV().iterator();
-
-        while (iter.hasNext()) {
-            node_data n = iter.next();
-
-            Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
-
-            while (itr.hasNext()) {
-                edge_data e = itr.next();
-                geo_location s = gg.getNode(e.getSrc()).getLocation();
-                geo_location d = gg.getNode(e.getDest()).getLocation();
-
-            }
-        }
-
-    }
-    public void updateGraphInfo(game_service game,Arena ar){
-       ArrayList<String> arrayList = new ArrayList<>();
+    /**
+     * This function updating the graph details every 0.3 seconds in order to show them on the main frame.
+     * @param game
+     * @param ar
+     */
+    public void updateGraphInfo(game_service game, Arena ar) {
+        ArrayList<String> arrayList = new ArrayList<>();
         new Thread() {
-            int counter = 10;
+            int counter = 1;
+
             public void run() {
-                while(counter >= 0) {
+                while (counter >= 0) {
                     arrayList.clear();
                     arrayList.add(game.getAgents());
                     arrayList.add(game.getGraph());
                     arrayList.add(game.getPokemons());
                     ar.set_info(arrayList);
-                    try{
+                    try {
                         Thread.sleep(300);
-                    } catch(Exception e) {}
+                    } catch (Exception e) {
+                    }
                 }
             }
         }.start();

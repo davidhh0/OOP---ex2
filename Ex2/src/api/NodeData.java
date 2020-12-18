@@ -4,27 +4,49 @@ public class NodeData implements node_data {
     private int _tag;
     private int _key;
     private geo_location _location;
+    private String _info;
 
-    public NodeData(int key){
-        _key=key;
-        _tag=0;
+    /**
+     * Constructor for a node data based of a given key.
+     *
+     * @param key
+     */
+    public NodeData(int key) {
+        _key = key;
+        _tag = 0;
+        _info = "Key: "+key + "Tag: " + _tag;
     }
 
+    /**
+     * @return the integer value key of this node.
+     */
     @Override
     public int getKey() {
         return _key;
     }
+
+    /**
+     * @return the location of this node.
+     */
     @Override
     public geo_location getLocation() {
         return _location;
     }
 
+    /**
+     * sets a location for this node.
+     *
+     * @param p - new new location  (position) of this node.
+     */
     @Override
     public void setLocation(geo_location p) {
         _location = p;
 
     }
 
+    /**
+     * @return
+     */
     @Override
     public double getWeight() {
         return 0;
@@ -37,7 +59,7 @@ public class NodeData implements node_data {
 
     @Override
     public String getInfo() {
-        return null;
+        return _info;
     }
 
     @Override
@@ -45,22 +67,23 @@ public class NodeData implements node_data {
 
     }
 
+    /**
+     * @return a tag number represented by an integer value.
+     */
     @Override
     public int getTag() {
         return _tag;
     }
 
+    /**
+     * sets the tag number for this node.
+     * @param t - the new value of the tag
+     */
     @Override
     public void setTag(int t) {
-    _tag =t;
+        _tag = t;
+        String s = "Key: "+ _key + "Tag: "+ t;
+        _info = s;
     }
 
-//    @Override
-//    public int compareTo(node_data o) {
-//        if (o.get_tag() > this.get_tag()) {
-//            return -1;
-//        } else {
-//            return 1;
-//        }
-//    }
 }

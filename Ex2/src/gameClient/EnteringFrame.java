@@ -9,22 +9,32 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+/**
+ * This class builds an entering stage for the game that gets from the user ID and a Scenario number based on JFrame.
+ */
 public class EnteringFrame extends JFrame {
     private int _win_h = 600;
     private int _win_w = 450;
-    private static BufferedImage image;
-    public boolean isOkay = false;
     private JFrame frame;
     public int _id = -1;
     public int _sce = -1;
+
+    /**
+     * Basic constructor for entering frame.
+     * @param a
+     */
     EnteringFrame(String a){
         super(a);
         init();
     }
+
+    /**
+     * This method builds input fields for entering the ID and scenario numbers and check their validation.
+     * If the inputs are valid for the game, it notifies the main project for the inputs.
+     */
     public void init(){
         frame=this;
         this.setSize(_win_h, _win_w);
-        BufferedImage imageWallpaper;
         JPanel contentPane = new JPanel() {
              public void paintComponent(Graphics g) {
                  Image img = Toolkit.getDefaultToolkit().getImage(

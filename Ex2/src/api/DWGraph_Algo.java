@@ -60,6 +60,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return NewGraph;
     }
 
+    /**
+     * This function picks a node and checks if there is a path from this node to any other nodes in the graph,
+     * if there is at least one unreachable node, the method returns false.
+     * After checking paths FROM the node, the method checks the same thing but on the transposed graph,
+     * meaning there is a path from each node to the first picked node,
+     * the method returns true if on the second part there is not such a node that the first node is unreachable from it.
+     * @return true iff the graph is strongly connected
+     */
     @Override
     public boolean isConnected() {
         if (_graph == null || _graph.nodeSize() == 1) return true;
@@ -104,6 +112,13 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return visitedT.size() == _graph.nodeSize();
     }
 
+    /**
+     * The method calculates the shortest path from src to dest and gets a linked list of the path.
+     * Then, the method sum up all the edge weights of each one in the linked list and returns the sum.
+     * @param src - start node
+     * @param dest - end (target) node
+     * @return total sum weight of the shortest path from src to dest.
+     */
     @Override
     public double shortestPathDist(int src, int dest) {
         if(getGraph().getNode(src) == null || getGraph().getNode(dest)==null) {

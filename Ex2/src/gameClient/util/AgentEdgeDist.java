@@ -12,10 +12,6 @@ public class AgentEdgeDist implements Comparable<AgentEdgeDist>{
         this._dist = dist;
     }
 
-    public int get_agentID() {
-        return _agentID;
-    }
-
     public double get_dist() {
         return _dist;
     }
