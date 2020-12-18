@@ -159,14 +159,16 @@ public class MyFrame extends JFrame {
         g.setFont(new Font("Times New Roman", Font.PLAIN, width / 100));
 
         ArrayList<String> agentStrings = new ArrayList<>();
-        if (_ar.get_info().get(0).split(",").length > 1) {
-            ArrayList<CL_Agent> agentArray = (ArrayList<CL_Agent>) Arena.getAgents(_ar.get_info().get(0), _ar.getGraph());
-            for (CL_Agent run : agentArray) {
-                agentString = "id: " + run.getID() + ", speed: " + run.getSpeed() + ", value: " + run.getValue();
-                sum += run.getValue();
-                agentStrings.add(agentString);
-                i++;
+        if(_ar.get_info().size()>0) {
+            if (_ar.get_info().get(0).split(",").length > 1) {
+                ArrayList<CL_Agent> agentArray = (ArrayList<CL_Agent>) Arena.getAgents(_ar.get_info().get(0), _ar.getGraph());
+                for (CL_Agent run : agentArray) {
+                    agentString = "id: " + run.getID() + ", speed: " + run.getSpeed() + ", value: " + run.getValue();
+                    sum += run.getValue();
+                    agentStrings.add(agentString);
+                    i++;
 
+                }
             }
         }
         g.setColor(new Color(97, 198, 207));
