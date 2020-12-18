@@ -161,6 +161,9 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public Collection<edge_data> getE(int node_id) {
+        if(edges.get(node_id)==null){
+            return Collections.<edge_data>emptyList();
+        }
         try {
             HashMap<Integer, edge_data> toReturn = new HashMap<>();
             for (Integer run : edges.get(node_id).keySet()) {
