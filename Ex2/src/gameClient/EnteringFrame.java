@@ -76,7 +76,7 @@ public class EnteringFrame extends JFrame {
                 String id = idField.getText();
                 String sce = scenarioField.getText();
                 //PROBLEM
-                if((id.length()==9 || Integer.parseInt(id)==-1) &&( Integer.parseInt(sce)>-1 && Integer.parseInt(sce)<24)){
+                if(id.length()==9 || Integer.parseInt(id)==-1){
                     int finalID = Integer.parseInt(id);
                     int finalSce = Integer.parseInt(sce);
                     _id = finalID;
