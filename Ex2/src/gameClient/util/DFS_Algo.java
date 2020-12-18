@@ -16,8 +16,6 @@ public class DFS_Algo {
     public ArrayList<directed_weighted_graph> _graphList;
 
     enum G_Color {WHITE, GRAY, BLACK, GREEN}
-
-    ;
     private HashMap<Integer, G_Color> colorMap;
     private PriorityQueue<StartFinish> startFinishes;
     private static int timer = 0;
@@ -34,7 +32,15 @@ public class DFS_Algo {
         startFinishes = new PriorityQueue<>();
 
     }
-
+    /**
+     * This function doing DFS algorithm from given node id on the graph.
+     * Starting with coloring the given node from White to Gray and set his discovery time to 0.
+     * Looping over all his edges and getting all his neighbors and Color each node that visited to Gray,
+     * and setting the his discovery time to the static timer.
+     * and Calling recurve DFS on each on of his neighbors.
+     * In the finish setting his End time and coloring him as Black.
+     * @param node starting node id.
+     */
     public void DFS(int node) {
         StartFinish startFinish = new StartFinish(node, ++timer, 0);
         colorMap.put(node, G_Color.GRAY);
@@ -49,6 +55,10 @@ public class DFS_Algo {
         colorMap.put(node, G_Color.BLACK);
     }
 
+    /**
+     * Doing the same as DFS algorithm but on the transpose graph (using InComing edges).
+     * @param node starting node id.
+     */
     public void DFS_Transpose(int node) {
         colorMap.put(node, G_Color.GRAY);
         DWGraph_DS ds_graph = (DWGraph_DS) this._graph;
@@ -60,7 +70,13 @@ public class DFS_Algo {
         colorMap.put(node, G_Color.BLACK);
     }
 
-
+    /**
+     * Staring DFS algortihm on the graph.
+     * Coloring all nodes with White Color.
+     * Starting DFS algorithm.
+     * Node sorting by the end time of each node that discovered.
+     * Doing DFS_Transpose on the same graph but starting from the last end time from the sorted array.
+     */
     public void StartDFS() {
 
         int nodeID = -1;
@@ -98,7 +114,13 @@ public class DFS_Algo {
 
     }
 
-
+    /**
+     * This function get the Coloring map and all the black nodes coloring as a Green.
+     * After find all Black nodes and coloring them with Green.
+     * Deleted them from the original graph and create new graph with there edges and nodes
+     * putting the new graph on the graph list.
+     * This is how he gets all the strongly connected components.
+     */
     private void createGraph() {
         directed_weighted_graph graph = new DWGraph_DS();
         //Add all nodes that are black
