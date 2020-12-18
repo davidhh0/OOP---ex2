@@ -202,8 +202,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
             }
         }
-        if(sofi==null) return answer;
-        if(sofi.getKey()!=dest) return answer;
+        if(sofi==null) return null;
+        if(sofi.getKey()!=dest) return null;
         boolean flag1=true;
         try{
             answer.add(_graph.getNode(dest));

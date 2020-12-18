@@ -221,7 +221,23 @@ public class JunitTest {
         Assertions.assertEquals(graph_algo3B.shortestPathDist(0, 0), 0);
 
     }
+    @Test
+    public void overWriteEdge(){
+        DWGraph_DS graph = Graph_2B();
+        // 2 -> 4 (10)
+        Assertions.assertEquals(graph.getEdge(2,4).getWeight(),10);
+        graph.connect(2,4,20);
+        Assertions.assertEquals(graph.getEdge(2,4).getWeight(),20);
+    }
 
+    @Test
+    public void emptyList(){
+        DWGraph_DS graph = Graph_2B();
+        dw_graph_algorithms algo = new DWGraph_Algo();
+        algo.init(graph);
+        LinkedList<node_data> path = (LinkedList<node_data>) algo.shortestPath(2,99);
+        Assertions.assertNull(path);
+    }
     // ----------------------------- Tests for Part II ------------------------------------------
 
     @Test
