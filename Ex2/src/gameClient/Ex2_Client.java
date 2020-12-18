@@ -5,17 +5,13 @@ import api.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import gameClient.util.AgentEdgeDist;
 import gameClient.util.DFS_Algo;
 import gameClient.util.EdgeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -30,8 +26,6 @@ public class Ex2_Client implements Runnable {
     public static long timeToEnd = 0;
     private static HashMap<Integer, Integer> LastOne = new HashMap<>();
     public static HashMap<Integer, EdgeValue> AgentToPok = new HashMap<>();
-    private static PriorityQueue<AgentEdgeDist> agentEdgeDistQ = new PriorityQueue<>();
-    private static HashMap<Integer, directed_weighted_graph> agentToGraph;
     public static boolean isLogged = false;
     private static ArrayList<directed_weighted_graph> graphs = new ArrayList<>();
     public static int TzNumber = -1;
@@ -58,7 +52,6 @@ public class Ex2_Client implements Runnable {
     public void run() {
         if (!isArgs) {
             _enterWin = new EnteringFrame("Enter Ex2");
-            //_enterWin.show();
             Thread t = new Thread() {
                 public void run() {
                     synchronized (lock) {
